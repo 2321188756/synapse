@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synapse - 调试页面</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header"><span>Synapse</span></div>
+  <button class="sidebar-toggle" onclick="var s=document.getElementById('sidebar');s.classList.toggle('collapsed');this.textContent=s.classList.contains('collapsed')?'▶':'◀'" title="折叠面板">◀</button>
+  <div class="sidebar-body">
+    <div class="sidebar-section">
+      <label>状态</label>
+      <div class="status-row">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">检测中...</span>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <label>API 地址</label>
+      <input id="apiBase" placeholder="http://localhost:5890/v1">
+    </div>
+    <div class="sidebar-section">
+      <label>API Key</label>
+      <input id="apiKey" type="password" placeholder="Bearer Token">
+    </div>
+    <div class="sidebar-section">
+      <label>模型</label>
+      <select id="modelSelect"><option value="auto">auto</option></select>
+    </div>
+    <div class="sidebar-section">
+      <label>System Prompt</label>
+      <textarea id="systemPrompt">你是一个有用的 AI 助手。你可以使用工具来帮助用户。</textarea>
+    </div>
+    <button class="btn" onclick="window.checkHealth()">检测连接</button>
+    <button class="btn" onclick="newSession()">新对话</button>
+    <button class="btn danger" onclick="clearAll()">清空</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="chat-area" id="chatArea"></div>
+  <div class="input-area">
+    <textarea id="userInput" rows="1" placeholder="输入消息，Enter 发送"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+    <button id="sendBtn" onclick="sendMessage()">发送</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

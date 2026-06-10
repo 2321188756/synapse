@@ -1,0 +1,69 @@
+name: daily_note
+display_name: 日记管理
+version: 1.0.0
+description: 创建、搜索和管理日记/记忆条目
+type: tool
+runtime: subprocess
+entry: main.py
+enabled: true
+
+tool:
+  instruction: |
+    用于管理用户记忆。相关记忆（含ID）已在上下文中自动提供。
+
+    **创建记忆** (command=create, 默认):
+    当用户明确要求"记住"、"记录"、"保存"信息时使用。
+
+    **更新记忆** (command=update):
+    当用户要求修改、更正、更新已有信息时使用。
+    必须提供记忆的 id（从上下文已记录信息中的 [mem_xxx] 获取）。
+    例如：用户说"我改名叫XX了"，应该 UPDATE 已有名称记忆，而非创建新的。
+
+    调用后你会收到确认，直接告知用户即可。
+
+  parameters:
+    command:
+      type: string
+      description: create 或 update，默认 create
+      enum: [create, update]
+    id:
+      type: string
+      description: 记忆ID（update 时必填，从上下文 [mem_xxx] 获取）
+    title:
+      type: string
+      description: 记忆标题
+      required: true
+    content:
+      type: string
+      description: 要记住的内容
+      required: true
+    tags:
+      type: string
+      description: 标签，逗号分隔
+
+  examples:
+    - description: 记住新信息
+      call: |
+        <<<TOOL>>>
+        name: daily_note
+        params:
+          command: create
+          title: 用户名称
+          content: 用户叫小王，中文名是弦丝泪
+          tags: 用户信息, 名称
+        <<<END>>>
+    - description: 更新已有记忆（需提供 id）
+      call: |
+        <<<TOOL>>>
+        name: daily_note
+        params:
+          command: update
+          id: mem_a1b2c3d4
+          title: 用户名称
+          content: 用户改名为小李
+          tags: 用户信息, 名称
+        <<<END>>>
+
+  timeout: 10
+
+config: {}

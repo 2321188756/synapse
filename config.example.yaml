@@ -1,0 +1,99 @@
+# ============================================================
+# Synapse 配置文件 (Node.js 主服务 + Rust 向量 + Python 插件)
+# ============================================================
+# 复制此文件为 config.yaml，填入你的配置后启动服务。
+# cp config.example.yaml config.yaml
+#
+# ⚠️ 首次使用必须修改 api_key 和 admin.password！
+#    保留默认值将导致服务拒绝启动。
+# ============================================================
+
+# ---- 服务器设置 ----
+server:
+  host: "0.0.0.0"
+  port: 5890
+  # 生产环境建议改为 127.0.0.1，由 Nginx 代理
+
+# ---- API Key (客户端连接用的 Bearer Token) ----
+api_key: "change-me-to-a-random-string"
+
+# ---- 默认 System Prompt (角色设定，可被客户端覆盖) ----
+system_prompt: "你是一个有用的 AI 助手。"
+
+# ---- 管理员设置 ----
+admin:
+  username: admin
+  password: "change-me-please"
+
+# ============================================================
+# LLM 上游配置 — 一个地址通吃所有 OpenAI 兼容服务
+# ============================================================
+# 无论你用 NewAPI / one-api / OpenAI 官方 / Ollama / vLLM，
+# 只要填 api_base + api_key 即可，不需要切换"模式"。
+#
+models:
+  # ---- 上游地址和密钥 ----
+  api_base: "https://api.openai.com/v1"     # OpenAI 官方
+  # api_base: "http://192.168.0.123:3000/v1"  # NewAPI / one-api
+  # api_base: "http://localhost:11434/v1"     # Ollama
+  api_key: "sk-your-key-here"
+
+  # ---- 默认模型 ----
+  primary: gpt-4o-mini                       # 默认使用的模型名
+
+  # ---- 容灾回退 (模型名列表，按顺序尝试) ----
+  fallback:
+    - gpt-3.5-turbo
+    # - claude-sonnet-4-6
+    # - gemini-2.5-pro
+
+  # ---- 模型路由 (model: auto 时根据语义自动选择) ----
+  routing:
+    default:  { model: gpt-4o-mini,       max_tokens: 8192 }
+    fast:     { model: gpt-3.5-turbo,     max_tokens: 4096 }
+    coding:   { model: claude-sonnet-4-6,  max_tokens: 8192 }
+    creative: { model: claude-opus-4-8,   max_tokens: 16384 }
+
+  # ---- Embedding ----
+  embedding:
+    model: text-embedding-3-small
+    dimension: 1536
+
+# ---- 记忆系统 ----
+memory:
+  # L2 中期记忆过期天数
+  l2_expire_days: 90
+  # 记忆巩固间隔 (小时)，0 为禁用
+  consolidation_interval_hours: 168
+  # 是否允许 AI 自动写入记忆
+  auto_remember: true
+  # AI 自动记忆的默认重要度
+  default_importance: 0.5
+  # 自动提升到 L3 的 recall_count 阈值
+  promote_recall_threshold: 5
+
+# ---- 插件设置 ----
+plugins:
+  # 禁用的插件列表
+  disabled: []
+  # 例如: ["image_gen", "video_gen"]
+  #
+  # 插件专属配置也可以写在这里，优先级高于 manifest.yaml 中的默认值:
+  # web_search:
+  #   TAVILY_API_KEY: "tvly-your-key"
+
+# ---- 安全设置 ----
+security:
+  # 每分钟最大请求数 (0 = 不限)
+  rate_limit: 60
+  # 单条消息最大字符数
+  max_message_length: 32000
+  # CORS 允许的域名
+  cors_origins:
+    - "*"  # 生产环境请改为你的域名
+
+# ---- 日志 ----
+logging:
+  level: info  # debug | info | warn | error
+  # 日志文件路径 (留空 = 仅输出到控制台)
+  file: ""

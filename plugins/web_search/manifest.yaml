@@ -1,0 +1,44 @@
+name: web_search
+display_name: 联网搜索
+version: 1.0.0
+description: 使用 Tavily API 搜索互联网信息
+type: tool
+runtime: subprocess
+entry: main.py
+enabled: true
+
+tool:
+  instruction: |
+    使用此工具搜索互联网信息，返回相关网页的标题、摘要和链接。
+    搜索结果可用于回答关于最新事件、实时数据的问题。
+
+  parameters:
+    query:
+      type: string
+      description: 搜索关键词或问题
+      required: true
+    max_results:
+      type: integer
+      description: 返回结果数量
+      minimum: 1
+      maximum: 10
+      default: 5
+
+  examples:
+    - description: 搜索最近新闻
+      call: |
+        <<<TOOL>>>
+        name: web_search
+        params:
+          query: 2026年6月科技新闻
+          max_results: 3
+        <<<END>>>
+
+  timeout: 30
+
+config:
+  TAVILY_API_KEY:
+    description: Tavily API 密钥 (从 https://tavily.com 获取)
+    required: true
+    secret: true
+    default: ""
