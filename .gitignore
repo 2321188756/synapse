@@ -2,6 +2,10 @@
 *.log
 logs/
 
+# 开发文档 (本地维护)
+devlog/
+docs/
+
 # 配置文件 (含密钥)
 config.yaml
 
