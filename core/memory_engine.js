@@ -145,13 +145,12 @@ class MemoryEngine {
         const vector = await this._embed(row.content);
         const key = this.vectorIndex.add(vector);
 
-        // upsert embeddings 映射
+        // 先删旧映射再插新的（避免 UNIQUE key 冲突）
         const now = new Date().toISOString();
+        this.db.prepare('DELETE FROM embeddings WHERE memory_id = ?').run(memoryId);
         this.db.prepare(`
             INSERT INTO embeddings (memory_id, key, model, dimension, created_at)
             VALUES (?, ?, ?, ?, ?)
-            ON CONFLICT(memory_id) DO UPDATE SET key = excluded.key, model = excluded.model,
-                dimension = excluded.dimension, created_at = excluded.created_at
         `).run(memoryId, key, this.embedder.config.model || '', vector.length, now);
 
         this.vectorIndex.save(VECTOR_INDEX_PATH);
