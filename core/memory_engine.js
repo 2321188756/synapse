@@ -16,6 +16,7 @@ const path = require('path');
 const { v4: uuid } = require('uuid');
 const database = require('./database');
 const config = require('./config');
+const { execute } = require('./plugin_executor');
 const { child } = require('../modules/logger');
 const log = child({ module: 'memory_engine' });
 
@@ -95,7 +96,7 @@ class MemoryEngine {
         `);
         stmt.run(id, entry.content, entry.summary || entry.content.slice(0, 100),
             entry.source || 'conversation', JSON.stringify(tags),
-            entry.importance ?? 0.5, now, id, entry.content.slice(0, 32));
+            entry.importance ?? 0.5, 'l3', now);
 
         // 更新标签索引
         const tagStmt = this.db.prepare('INSERT OR IGNORE INTO memory_tags (tag, memory_id) VALUES (?, ?)');
@@ -163,11 +164,11 @@ class MemoryEngine {
             return this._keywordRecall(query, topK);
         }
 
-        // 从 SQLite 查元数据
+        // 从 SQLite 查元数据（一次 JOIN，不用二次查询）
         const keys = results.map(r => r.key);
         const placeholders = keys.map(() => '?').join(',');
         const rows = this.db.prepare(`
-            SELECT m.* FROM memories m
+            SELECT m.*, e.key as embedding_key FROM memories m
             JOIN embeddings e ON e.memory_id = m.id
             WHERE e.key IN (${placeholders})
         `).all(...keys);
@@ -175,8 +176,7 @@ class MemoryEngine {
         // 按向量距离排序 + 标签加权
         const keyToDist = new Map(results.map(r => [r.key, r.distance]));
         const scored = rows.map(row => {
-            const embeddingRow = this.db.prepare('SELECT key FROM embeddings WHERE memory_id = ?').get(row.id);
-            const dist = embeddingRow ? (keyToDist.get(embeddingRow.key) || 1.0) : 1.0;
+            const dist = keyToDist.get(row.embedding_key) || 1.0;
             const vectorScore = Math.max(0, 1.0 - dist); // 余弦距离 → 相似度
             const tags = JSON.parse(row.tags || '[]');
             const daysOld = (Date.now() - new Date(row.created_at).getTime()) / 86400000;
@@ -217,7 +217,7 @@ class MemoryEngine {
             const tags = JSON.parse(row.tags || '[]');
             const matched = tags.filter(t => kwSet.has(t)).length;
             const daysOld = (Date.now() - new Date(row.created_at).getTime()) / 86400000;
-            const timeDecay = Math.pow(0.5, daysOld / 7);
+            const timeDecay = Math.pow(0.5, daysOld / 30); // 30 天半衰期
             const score = matched * 0.4 + row.importance * 0.4 + Math.min(row.recall_count / 10, 1) * 0.2;
             return { ...row, _score: score * timeDecay };
         });
@@ -233,7 +233,6 @@ class MemoryEngine {
 
     /** 调用 rag_embedding 插件生成向量 */
     async _embed(text) {
-        const { execute } = require('./plugin_executor');
         const result = await execute(this.embedder, { name: 'rag_embedding', params: { text } });
         if (result.status !== 'success') {
             throw new Error(result.error || 'embedding failed');
