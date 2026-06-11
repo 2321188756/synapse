@@ -164,7 +164,7 @@ class MemoryEngine {
      * @param {string} query - 用户当前消息
      * @param {number} topK - 返回条数
      */
-    async recall(query, topK = 5) {
+    async recall(query, topK = 8) {
         // ---- 第一层：向量语义检索 ----
         if (this._vectorReady && this.embedder) {
             try {
@@ -181,24 +181,26 @@ class MemoryEngine {
     /** 向量语义检索 */
     async _vectorRecall(query, topK) {
         const vector = await this._embed(query);
-        const results = this.vectorIndex.search(vector, topK);
+        // 多搜一些补偿孤儿 key（fast-hnsw 不支持 remove，旧向量残留）
+        const results = this.vectorIndex.search(vector, topK * 2);
         if (!results || results.length === 0) {
             log.info('vector search: 0 results → keyword fallback');
             return this._keywordRecall(query, topK);
         }
 
-        // 从 SQLite 查元数据（一次 JOIN，不用二次查询）
+        // 从 SQLite 查元数据（LEFT JOIN 容错孤儿 key）
         const keys = results.map(r => r.key);
         const placeholders = keys.map(() => '?').join(',');
         const rows = this.db.prepare(`
-            SELECT m.*, e.key as embedding_key FROM memories m
-            JOIN embeddings e ON e.memory_id = m.id
+            SELECT m.*, e.key as embedding_key FROM embeddings e
+            LEFT JOIN memories m ON m.id = e.memory_id
             WHERE e.key IN (${placeholders})
         `).all(...keys);
 
-        // 按向量距离排序 + 标签加权
+        // 过滤孤儿 key（无对应记忆的 HNSW 条目）+ 按向量距离排序 + 标签加权
+        const validRows = rows.filter(r => r.id !== null);
         const keyToDist = new Map(results.map(r => [r.key, r.distance]));
-        const scored = rows.map(row => {
+        const scored = validRows.map(row => {
             const dist = keyToDist.get(row.embedding_key) || 1.0;
             const vectorScore = Math.max(0, 1.0 - dist); // 余弦距离 → 相似度
             const tags = JSON.parse(row.tags || '[]');
