@@ -134,6 +134,30 @@ class MemoryEngine {
         log.info('vector indexed: ' + memoryId + ' (key=' + key + ', dim=' + vector.length + ')');
     }
 
+    /**
+     * 重向量化 — daily_note 修改记忆后调用，保持向量与内容同步
+     * fast-hnsw 不支持 remove，旧向量残留但新向量覆盖语义
+     */
+    async reindex(memoryId) {
+        if (!this._vectorReady || !this.embedder) return;
+        const row = this.db.prepare('SELECT content FROM memories WHERE id = ?').get(memoryId);
+        if (!row) return;
+        const vector = await this._embed(row.content);
+        const key = this.vectorIndex.add(vector);
+
+        // upsert embeddings 映射
+        const now = new Date().toISOString();
+        this.db.prepare(`
+            INSERT INTO embeddings (memory_id, key, model, dimension, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(memory_id) DO UPDATE SET key = excluded.key, model = excluded.model,
+                dimension = excluded.dimension, created_at = excluded.created_at
+        `).run(memoryId, key, this.embedder.config.model || '', vector.length, now);
+
+        this.vectorIndex.save(VECTOR_INDEX_PATH);
+        log.info('vector reindexed: ' + memoryId + ' (new key=' + key + ', dim=' + vector.length + ')');
+    }
+
     // ========== 召回 ==========
 
     /**

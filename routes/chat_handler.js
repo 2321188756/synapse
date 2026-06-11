@@ -84,6 +84,14 @@ function createChatRouter(modelConfig, systemPrompt, log) {
                 toolRounds.push({ calls: toolCalls, results });
                 chatLog.info('  [round ' + round + '] results: ' + results.map(r => r.status + (r.error ? ':' + r.error : '')).join(', '), { requestId, round });
 
+                // daily_note 写入/更新后自动重向量化
+                for (let i = 0; i < toolCalls.length; i++) {
+                    if (toolCalls[i].name === 'daily_note' && results[i]?.status === 'success') {
+                        const memId = results[i]?.data?.id;
+                        if (memId) memoryEngine.reindex(memId).catch(e => chatLog.warn('reindex failed: ' + e.message));
+                    }
+                }
+
                 // 追加到对话历史
                 messages.push({ role: 'assistant', content: fullContent });
                 for (const r of results) {
