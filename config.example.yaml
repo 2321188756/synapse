@@ -54,10 +54,10 @@ models:
     coding:   { model: claude-sonnet-4-6,  max_tokens: 8192 }
     creative: { model: claude-opus-4-8,   max_tokens: 16384 }
 
-  # ---- Embedding ----
+  # ---- Embedding（模型列表自动从上游 API 获取，非对话类自动排除）----
   embedding:
-    model: text-embedding-3-small
-    dimension: 1536
+    model: Qwen/Qwen3-Embedding-8B
+    dimension: 1024
 
 # ---- 记忆系统 ----
 memory:

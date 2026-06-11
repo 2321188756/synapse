@@ -1,0 +1,23 @@
+name: rag_embedding
+display_name: RAG Embedding
+version: 1.0.0
+description: 调用 Embedding API 生成文本向量，供 memory_engine 使用
+type: internal
+runtime: subprocess
+entry: main.py
+enabled: true
+
+internal:
+  consumes: [text]
+  produces: [vector]
+
+# Embedding 配置取自 config.yaml models.embedding 段，此处声明默认值
+config:
+  model:
+    type: string
+    description: Embedding 模型名
+    default: text-embedding-3-small
+  dimension:
+    type: integer
+    description: 向量维度
+    default: 1536

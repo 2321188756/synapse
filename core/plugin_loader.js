@@ -88,6 +88,12 @@ class PluginLoader {
             .filter(p => p.manifest.type === 'static' && p.manifest.enabled !== false);
     }
 
+    /** 返回所有 internal 插件 (type: internal) — 供 core 模块消费，不注入工具列表 */
+    getInternals() {
+        return [...this.plugins.values()]
+            .filter(p => p.manifest.type === 'internal' && p.manifest.enabled !== false);
+    }
+
     /** 根据名称获取插件 */
     get(name) {
         return this.plugins.get(name) || null;

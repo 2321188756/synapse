@@ -60,6 +60,19 @@ function init() {
     // 迁移：添加 updated_at 列（Phase 3.1 记忆更新功能）
     try { db.exec(`ALTER TABLE memories ADD COLUMN updated_at TEXT`); } catch (_) { /* 列已存在 */ }
 
+    // 向量索引表（Phase 4: 关联 USearch 索引 key 与记忆 ID）
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS embeddings (
+            memory_id TEXT PRIMARY KEY,
+            key INTEGER UNIQUE NOT NULL,
+            model TEXT NOT NULL DEFAULT '',
+            dimension INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (memory_id) REFERENCES memories(id) ON DELETE CASCADE
+        )
+    `);
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_embeddings_key ON embeddings(key)`);
+
     // 索引
     db.exec(`CREATE INDEX IF NOT EXISTS idx_memories_tags ON memories(tags)`);
     db.exec(`CREATE INDEX IF NOT EXISTS idx_memories_importance ON memories(importance DESC)`);

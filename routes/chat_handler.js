@@ -43,7 +43,7 @@ function createChatRouter(modelConfig, systemPrompt, log) {
             chatLog.info('--- REQ ' + requestId + ' --- user=' + userMessage.slice(0, 80), { requestId });
 
             // 记忆召回
-            const memories = memoryEngine.recall(userMessage, 5);
+            const memories = await memoryEngine.recall(userMessage, 5);
             chatLog.info('memories: ' + memories.length, { requestId });
             if (memories.length > 0) {
                 chatLog.info('  memory content: ' + memories.map(m => m.content).join(' | '), { requestId });
