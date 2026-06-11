@@ -32,7 +32,19 @@ const log = createLogger(CONFIG);
 
 // ========== 插件初始化 ==========
 const pluginLoader = require('./core/plugin_loader');
-pluginLoader.discover(CONFIG.plugins || {});
+
+// 注入 embedding 配置到 rag_embedding 插件（支持独立 API 地址或复用 models.api_base）
+const pluginConfig = { ...(CONFIG.plugins || {}) };
+if (CONFIG.models?.embedding) {
+    const emb = CONFIG.models.embedding;
+    pluginConfig.rag_embedding = {
+        model: emb.model,
+        dimension: emb.dimension,
+        api_base: emb.api_base || CONFIG.models.api_base,
+        api_key: emb.api_key || CONFIG.models.api_key,
+    };
+}
+pluginLoader.discover(pluginConfig);
 
 // ========== 记忆引擎初始化 ==========
 const database = require('./core/database');

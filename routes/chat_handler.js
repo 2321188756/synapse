@@ -84,12 +84,20 @@ function createChatRouter(modelConfig, systemPrompt, log) {
                 toolRounds.push({ calls: toolCalls, results });
                 chatLog.info('  [round ' + round + '] results: ' + results.map(r => r.status + (r.error ? ':' + r.error : '')).join(', '), { requestId, round });
 
-                // daily_note 写入/更新后自动重向量化
+                // daily_note 结果通过 memory_engine 统一写入（不再直写 SQLite）
                 for (let i = 0; i < toolCalls.length; i++) {
-                    if (toolCalls[i].name === 'daily_note' && results[i]?.status === 'success') {
-                        const memId = results[i]?.data?.id;
-                        if (memId) memoryEngine.reindex(memId).catch(e => chatLog.warn('reindex failed: ' + e.message));
-                    }
+                    if (toolCalls[i].name !== 'daily_note' || results[i]?.status !== 'success') continue;
+                    const d = results[i]?.data || {};
+                    try {
+                        if (d.action === 'create') {
+                            memoryEngine.remember({ content: d.content, tags: d.tags, source: 'ai_generated' });
+                        } else if (d.action === 'update') {
+                            const updates = {};
+                            if (d.content) updates.content = d.content;
+                            if (d.tags) updates.tags = d.tags;
+                            memoryEngine.modify(d.id, updates);
+                        }
+                    } catch (e) { chatLog.warn('memory write failed: ' + e.message); }
                 }
 
                 // 追加到对话历史

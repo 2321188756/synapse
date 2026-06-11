@@ -56,17 +56,7 @@ class MemoryEngine {
             const internals = pluginLoader.getInternals();
             this.embedder = internals.find(p => p.manifest.name === 'rag_embedding') || null;
             if (this.embedder) {
-                // 注入 embedding API 配置（从 config.yaml models.embedding + api_base/api_key）
-                const cfg = config.get();
-                if (cfg?.models) {
-                    this.embedder.config = {
-                        ...this.embedder.config,
-                        model: cfg.models.embedding?.model || 'text-embedding-3-small',
-                        api_base: cfg.models.api_base,
-                        api_key: cfg.models.api_key,
-                    };
-                }
-                log.info('embedder: rag_embedding ready (model=' + this.embedder.config.model + ')');
+                log.info('embedder: rag_embedding ready (model=' + (this.embedder.config.model || 'unknown') + ')');
             } else {
                 log.info('embedder: rag_embedding not found');
             }
@@ -391,6 +381,12 @@ class MemoryEngine {
         const result = this.db.prepare(
             `UPDATE memories SET ${fields.join(', ')} WHERE id = ?`).run(...params);
         log.info('memory updated: ' + id + ' (' + result.changes + ' rows)');
+
+        // 内容变更时异步重向量化
+        if (updates.content !== undefined) {
+            this.reindex(id).catch(e => log.warn('reindex after modify failed: ' + e.message));
+        }
+
         return { id, changed: result.changes > 0 };
     }
 

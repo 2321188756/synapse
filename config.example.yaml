@@ -58,6 +58,9 @@ models:
   embedding:
     model: Qwen/Qwen3-Embedding-8B
     dimension: 1024
+    # 可选：独立 API 地址和密钥（留空则复用 models.api_base / models.api_key）
+    # api_base: "http://localhost:11434/v1"
+    # api_key: "ollama"
 
 # ---- 记忆系统 ----
 memory:
