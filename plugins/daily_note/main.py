@@ -20,9 +20,9 @@ def cmd_create(params):
     id = 'mem_' + str(uuid.uuid4())[:8]
     return {
         'status': 'success',
-        'action': 'create',
         'content': f'日记已创建: {title} (id={id}, tags={",".join(tags)})',
         'data': {
+            'action': 'create',
             'id': id,
             'content': content,
             'tags': tags,
@@ -41,9 +41,9 @@ def cmd_update(params):
 
     return {
         'status': 'success',
-        'action': 'update',
         'content': f'记忆已更新: {id}',
         'data': {
+            'action': 'update',
             'id': id,
             'content': content or None,
             'tags': tags,
