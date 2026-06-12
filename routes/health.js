@@ -34,11 +34,35 @@ router.get('/health', async (_req, res) => {
                 result.upstream.latency_ms = Date.now() - t0;
                 result.upstream.status = (r.status === 200) ? 'ok'
                     : (r.status === 401 || r.status === 403) ? 'auth_error' : 'error';
+                if (r.status === 200) {
+                    result.upstream.model_count = (r.data?.data || []).length;
+                }
             } catch (e) {
                 result.upstream.latency_ms = Date.now() - t0;
                 result.upstream.status = 'unreachable';
+                result.upstream.error = e.code === 'ETIMEDOUT' ? 'timeout' :
+                    e.code === 'ECONNREFUSED' ? 'connection_refused' : e.message;
             }
         }
+    } catch (_) { /* best-effort */ }
+
+    // 插件状态
+    try {
+        const pl = require('../core/plugin_loader');
+        result.plugins = {
+            active: pl.plugins.size,
+            tools: pl.getTools().length,
+            internals: pl.getInternals().length,
+        };
+    } catch (_) { /* best-effort */ }
+
+    // 记忆引擎状态
+    try {
+        const me = require('../core/memory_engine');
+        result.memory = {
+            ready: !!me.db,
+            vector: me._vectorReady ? 'online' : 'offline',
+        };
     } catch (_) { /* best-effort */ }
 
     res.json(result);
