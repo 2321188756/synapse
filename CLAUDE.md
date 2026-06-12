@@ -103,7 +103,8 @@ synapse/
 │   ├── 003-phase2-工具协议.md
 │   ├── 004-phase3-记忆系统.md
 │   ├── 005-phase4-Rust向量引擎.md
-│   └── 006-phase5-WebSocket推送.md
+│   ├── 006-phase5-WebSocket推送.md
+│   └── 007-phase6-管理API.md
 │
 ├── docs/                      ← 设计文档（代码的"说明书"）
 │   ├── 架构设计.md             ← 最核心：全景图 + 模块职责 + 数据流
@@ -139,7 +140,9 @@ synapse/
 │   ├── chat_handler.js        ← POST /v1/chat/completions
 │   ├── health.js              ← GET /api/health (+上游探测)
 │   ├── models.js              ← GET /v1/models (从上游拉取)
-│   └── memories.js            ← 记忆管理 CRUD
+│   ├── memories.js            ← 记忆管理 CRUD + consolidate
+│   ├── plugins.js             ← 插件管理 (列表/重载/启禁)
+│   └── config.js              ← 系统配置 (脱敏查询/更新)
 ├── scripts/                   ← 运维脚本
 │   └── migrate-embeddings.js  ← 批量向量化迁移
 ├── web/                       ← 内置调试页面

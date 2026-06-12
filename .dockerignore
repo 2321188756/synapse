@@ -1,0 +1,12 @@
+node_modules/
+rust-vector/target/
+data/
+logs/
+.git/
+.gitignore
+.dockerignore
+config.yaml
+*.log
+__pycache__/
+.env
+start.bat

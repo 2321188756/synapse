@@ -40,19 +40,31 @@
 
 ## 快速开始
 
+### Docker 一键启动（推荐）
+
 ```bash
-git clone https://github.com/your/synapse.git
+git clone https://github.com/2321188756/synapse.git
+cd synapse
+cp config.example.yaml config.yaml
+# 编辑 config.yaml，填入 LLM API Key
+docker-compose up -d
+# 打开 http://localhost:5890
+```
+
+### 本地开发启动
+
+```bash
+git clone https://github.com/2321188756/synapse.git
 cd synapse
 cp config.example.yaml config.yaml
 # 编辑 config.yaml，填入 LLM API Key
 
-npm install                  # Node.js 依赖
-npm run build:rust           # 编译 Rust 向量引擎
-pip install -r requirements.txt  # Python 插件依赖
+npm install
+npm run build:rust
+pip install -r requirements.txt
 
 npm start
-# 打开 http://localhost:5890 → 内置调试页面直接聊天
-# API 地址: http://localhost:5890/v1 → 给任何 OpenAI 兼容客户端用
+# 打开 http://localhost:5890
 ```
 
 ---
@@ -171,8 +183,8 @@ Python  →  AI 插件 (生图、搜索、数据分析)
 - [x] Phase 3: 记忆系统 — 向量检索 + 标签索引 + 日记插件
 - [x] Phase 4: Rust 向量引擎 — N-API 绑定 + fast-hnsw 集成
 - [x] Phase 5: WebSocket 推送 + 异步工具回调
-- [ ] Phase 6: 管理 API — 插件热重载 + 记忆管理 ← 🔄 今日启动
-- [ ] Phase 7: Docker 一键部署
+- [x] Phase 6: 管理 API — 插件热重载 + 记忆管理
+- [x] Phase 7: Docker 一键部署
 
 ---
 
