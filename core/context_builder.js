@@ -104,6 +104,7 @@ function buildMessages({ systemPrompt, history = [], userMessage, variables = {}
         '3. 用户纠正你时，必须立即用 daily_note update 更新对应记忆，不要只口头认错。',
         '4. 记录记忆时，只写用户明确说过的内容，不要自己补充细节、评价或推断（用户说"不好吃"，不要加"紫菜卷很干"）。',
         '5. 将相对时间（昨天/上周）转换为具体日期（YYYY年M月D日），不要写「昨天」。',
+        '6. 文件操作（创建/读取/写入/删除）必须使用 file_manager 工具，不要说"已完成"却不调用工具。',
     ].join('\n'));
 
     if (sysParts.length > 0) {

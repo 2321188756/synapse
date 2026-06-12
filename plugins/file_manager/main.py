@@ -26,7 +26,7 @@ def cmd_read(root, params):
         return {"status": "error", "error": "路径不允许（不能访问上层目录）"}
 
     if not os.path.exists(safe):
-        return {"status": "error", "error": f"文件不存在: {path}"}
+        return {"status": "error", "error": f"文件不存在: {path}（如需创建请用 command: write）"}
 
     try:
         with open(safe, "r", encoding="utf-8") as f:
@@ -130,7 +130,7 @@ def execute(params, config):
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     abs_root = os.path.join(project_root, root)
 
-    cmd = params.get("command", "read")
+    cmd = params.get("command", "read" if params.get("path") and not params.get("content") else "write")
     if cmd == "write":
         return cmd_write(abs_root, params)
     elif cmd == "list":

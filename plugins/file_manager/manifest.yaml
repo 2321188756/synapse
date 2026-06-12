@@ -9,12 +9,12 @@ enabled: true
 
 tool:
   instruction: |
-    用于读写 data/files/ 下的文件。
-    - read: 读取文件内容
-    - write: 写入/覆盖文件
-    - list: 列出目录文件
-    - delete: 删除文件（需确认）
-    路径自动限制在 data/files/ 内，不能访问上层目录。
+    ⚠️ 文件操作必须使用本工具！不要凭空说"已创建"但没调用。
+    write = 新建/覆盖文件（支持嵌套路径，自动创建目录）
+    read  = 读取已有文件
+    list  = 列出目录
+    delete = 删除文件
+    路径限制在 data/files/ 内，不能访问上层目录。
 
   parameters:
     command:
