@@ -181,8 +181,14 @@ function createChatRouter(modelConfig, systemPrompt, log) {
                         const name = tr.calls[i].name;
                         const result = tr.results[i] || {};
                         const ok = result.status === 'success';
-                        const rawCmd = (tr.calls[i].params?.command || '');
-                        const rawCall = '<<<TOOL>>>\nname: ' + name + (rawCmd ? '\ncommand: ' + rawCmd : '') + '\n  ...';
+                        // 完整展示 AI 的工具调用参数
+                        const params = tr.calls[i].params || {};
+                        let rawCall = '<<<TOOL>>>\nname: ' + name;
+                        for (const [k, v] of Object.entries(params)) {
+                            const val = typeof v === 'string' ? v : JSON.stringify(v);
+                            rawCall += '\n  ' + k + ': ' + (val.length > 200 ? val.slice(0,200) + '...' : val);
+                        }
+                        rawCall += '\n<<<END>>>';
                         const preview = (result.content || result.error || '').replace(/\n/g, '\\n');
                         const cardData = JSON.stringify({ t: name, s: ok ? 'ok' : 'fail', p: preview, r: rawCall });
                         sseWrite(res, requestId, modelName(modelConfig), '🔧TOOL' + cardData);
