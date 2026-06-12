@@ -8,6 +8,7 @@
 
 const { Router } = require('express');
 const router = Router();
+const database = require('../core/database');
 const memoryEngine = require('../core/memory_engine');
 
 router.get('/memories', (req, res) => {
@@ -50,7 +51,7 @@ router.delete('/memories/:id', (req, res) => {
 // POST /api/memories/consolidate — 手动触发记忆巩固（去重 + 合并）
 router.post('/memories/consolidate', (_req, res) => {
     try {
-        const db = require('../core/database').get();
+        const db = database.get();
         // 简单去重：合并内容完全相同的记忆，保留最早的，删除其余的
         const dupes = db.prepare(`
             SELECT content, COUNT(*) as cnt, MIN(id) as keep_id

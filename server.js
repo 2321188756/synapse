@@ -158,10 +158,13 @@ const createChatRouter = require('./routes/chat_handler');
 
 const memoriesRouter = require('./routes/memories');
 
+const pluginsRouter = require('./routes/plugins');
+const configRouter = require('./routes/config');
+
 app.use('/api', healthRouter);
 app.use('/api', memoriesRouter);
-app.use('/api', require('./routes/plugins'));
-app.use('/api', require('./routes/config'));
+app.use('/api', pluginsRouter);
+app.use('/api', configRouter);
 app.use('/v1', createModelsRouter(CONFIG.models));
 app.use('/v1', createChatRouter(CONFIG.models, DEFAULT_SYSTEM_PROMPT, log));
 

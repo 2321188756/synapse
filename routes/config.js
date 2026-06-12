@@ -37,6 +37,7 @@ router.put('/config', (req, res) => {
         const allowedFields = ['system_prompt', 'memory', 'plugins', 'logging', 'server'];
         for (const key of Object.keys(updates)) {
             if (allowedFields.includes(key)) {
+                if (typeof updates[key] !== 'object' || Array.isArray(updates[key])) continue; // 拒绝非对象值
                 current[key] = { ...current[key], ...updates[key] };
             }
         }
