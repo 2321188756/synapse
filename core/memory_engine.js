@@ -67,6 +67,11 @@ class MemoryEngine {
 
         const status = this._vectorReady ? 'L1 + L2 + L3' : 'L1 + L3 (fallback)';
         log.info('memory engine ready (' + status + ')');
+
+        // 启动自动巩固（每小时检查）
+        this._autoConsolidateInterval = setInterval(() => {
+            this.consolidate().catch(e => log.warn('auto-consolidate: ' + e.message));
+        }, 3600_000);
     }
 
     // ========== 写入 ==========
@@ -388,6 +393,21 @@ class MemoryEngine {
         }
 
         return { id, changed: result.changes > 0 };
+    }
+
+    /** 自动巩固：recallCount ≥ 5 的记忆提升 importance */
+    async consolidate() {
+        const rows = this.db.prepare(
+            'SELECT id, content, recall_count, importance FROM memories WHERE recall_count >= 5 AND importance < 0.9'
+        ).all();
+        if (rows.length === 0) return { promoted: 0 };
+
+        const stmt = this.db.prepare('UPDATE memories SET importance = MIN(importance + 0.1, 1.0), updated_at = ? WHERE id = ?');
+        const now = new Date().toISOString();
+        for (const r of rows) stmt.run(now, r.id);
+
+        log.info('consolidate: ' + rows.length + ' memories promoted');
+        return { promoted: rows.length };
     }
 
     /** 生成记忆注入文本 */

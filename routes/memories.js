@@ -73,4 +73,22 @@ router.post('/memories/consolidate', (_req, res) => {
     }
 });
 
+// GET /api/memories/related?tag=编程 — 标签共现分析
+router.get('/memories/related', (req, res) => {
+    try {
+        const tag = req.query.tag;
+        if (!tag) return res.status(400).json({ error: '需要 tag 参数' });
+        const db = require('../core/database').get();
+        const rows = db.prepare(`
+            SELECT tag_b as tag, weight FROM tag_co_occurrence WHERE tag_a = ?
+            UNION
+            SELECT tag_a as tag, weight FROM tag_co_occurrence WHERE tag_b = ?
+            ORDER BY weight DESC LIMIT 10
+        `).all(tag, tag);
+        res.json({ tag, related: rows });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 module.exports = router;
