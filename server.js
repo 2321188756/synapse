@@ -165,6 +165,7 @@ app.use('/api', healthRouter);
 app.use('/api', memoriesRouter);
 app.use('/api', pluginsRouter);
 app.use('/api', configRouter);
+app.use('/api', require('./routes/conversations').router);
 app.use('/v1', createModelsRouter(CONFIG.models));
 app.use('/v1', createChatRouter(CONFIG.models, DEFAULT_SYSTEM_PROMPT, log));
 

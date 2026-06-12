@@ -15,6 +15,7 @@ const { executeBatch } = require('../core/plugin_executor');
 const pluginLoader = require('../core/plugin_loader');
 const memoryEngine = require('../core/memory_engine');
 const { execute } = require('../core/plugin_executor');
+const { saveConversation } = require('./conversations');
 
 const router = Router();
 const MAX_TOOL_ROUNDS = 5;
@@ -50,6 +51,15 @@ function createChatRouter(modelConfig, systemPrompt, log) {
     router.post('/chat/completions', async (req, res) => {
         const requestId = req.requestId || `req_${Date.now().toString(36)}`;
         const chatLog = log || { info: () => {}, debug: () => {}, error: console.error };
+
+        // 对话自动保存
+        const allMsgs = [];
+        req._synapseMessages = allMsgs;
+        res.on('finish', () => {
+            if (allMsgs.length > 0) {
+                try { saveConversation(requestId, (allMsgs[0]?.content || '').slice(0, 50), allMsgs); } catch (_) {}
+            }
+        });
 
         try {
             const reqStart = Date.now();
@@ -96,6 +106,9 @@ function createChatRouter(modelConfig, systemPrompt, log) {
             });
 
             chatLog.info('  messages: ' + messages.length + ' items | system=' + (messages[0]?.content || '').slice(0, 300), { requestId });
+
+            // 记录到对话保存
+            allMsgs.push({ role: 'user', content: userMessage });
 
             // ---- 工具调用循环 ----
             let fullContent = '';

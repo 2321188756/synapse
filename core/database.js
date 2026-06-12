@@ -73,6 +73,18 @@ function init() {
     `);
     db.exec(`CREATE INDEX IF NOT EXISTS idx_embeddings_key ON embeddings(key)`);
 
+    // 对话历史表（Phase 10）
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS conversations (
+            id TEXT PRIMARY KEY,
+            title TEXT DEFAULT '',
+            messages TEXT NOT NULL DEFAULT '[]',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    `);
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_conv_updated ON conversations(updated_at DESC)`);
+
     // 索引
     db.exec(`CREATE INDEX IF NOT EXISTS idx_memories_tags ON memories(tags)`);
     db.exec(`CREATE INDEX IF NOT EXISTS idx_memories_importance ON memories(importance DESC)`);
