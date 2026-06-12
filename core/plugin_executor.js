@@ -104,11 +104,7 @@ function execute(plugin, toolCall) {
 async function executeBatch(pluginLoader, toolCalls) {
     const results = await Promise.all(
         toolCalls.map(async (tc) => {
-            // 向后兼容：AI 可能使用 snake_case 旧名
-            const ALIASES = { daily_note: 'DailyNote', web_search: 'WebSearch', file_manager: 'FileManager', rag_embedding: 'RAGNova' };
-            const resolvedName = ALIASES[tc.name] || tc.name;
-
-            const plugin = pluginLoader.get(resolvedName);
+            const plugin = pluginLoader.get(tc.name);
             if (!plugin) {
                 return { status: 'error', content: '', error: `工具 '${tc.name}' 不存在` };
             }

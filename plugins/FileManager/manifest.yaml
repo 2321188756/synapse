@@ -34,7 +34,7 @@ tool:
     - description: 读取文件
       call: |
         <<<TOOL>>>
-        name: file_manager
+        name: FileManager
         params:
           command: read
           path: notes/ideas.txt
@@ -42,7 +42,7 @@ tool:
     - description: 写入文件
       call: |
         <<<TOOL>>>
-        name: file_manager
+        name: FileManager
         params:
           command: write
           path: notes/summary.md

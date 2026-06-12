@@ -48,7 +48,7 @@ tool:
     - description: 记住新信息
       call: |
         <<<TOOL>>>
-        name: daily_note
+        name: DailyNote
         params:
           command: create
           title: 用户名称
@@ -58,7 +58,7 @@ tool:
     - description: 更新已有记忆（需提供 id）
       call: |
         <<<TOOL>>>
-        name: daily_note
+        name: DailyNote
         params:
           command: update
           id: mem_a1b2c3d4

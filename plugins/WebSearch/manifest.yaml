@@ -28,7 +28,7 @@ tool:
     - description: 搜索最近新闻
       call: |
         <<<TOOL>>>
-        name: web_search
+        name: WebSearch
         params:
           query: 2026年6月科技新闻
           max_results: 3
