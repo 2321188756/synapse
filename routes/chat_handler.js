@@ -43,7 +43,7 @@ function createChatRouter(modelConfig, systemPrompt, log) {
             chatLog.info('--- REQ ' + requestId + ' --- user=' + userMessage.slice(0, 80), { requestId });
 
             // 记忆召回
-            const memories = await memoryEngine.recall(userMessage, 5);
+            const memories = await memoryEngine.recall(userMessage, 5, requestId);
             chatLog.info('memories: ' + memories.length, { requestId });
             if (memories.length > 0) {
                 chatLog.info('  memory content: ' + memories.map(m => m.content).join(' | '), { requestId });
@@ -72,7 +72,7 @@ function createChatRouter(modelConfig, systemPrompt, log) {
 
             for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
                 chatLog.info('  [round ' + round + '] calling LLM...', { requestId });
-                fullContent = await chat(messages, modelConfig, { model, stream: false });
+                fullContent = await chat(messages, modelConfig, { model, stream: false, requestId });
                 chatLog.info('  [round ' + round + '] response: ' + fullContent.length + ' chars, hasTool=' + hasToolCalls(fullContent), { requestId, round });
 
                 if (!hasToolCalls(fullContent)) break;

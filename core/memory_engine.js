@@ -154,13 +154,13 @@ class MemoryEngine {
      * @param {string} query - 用户当前消息
      * @param {number} topK - 返回条数
      */
-    async recall(query, topK = 8) {
+    async recall(query, topK = 8, requestId) {
         // ---- 第一层：向量语义检索 ----
         if (this._vectorReady && this.embedder) {
             try {
-                return await this._vectorRecall(query, topK);
+                return await this._vectorRecall(query, topK, requestId);
             } catch (e) {
-                log.warn('vector recall failed, fallback to keyword: ' + e.message);
+                log.warn('vector recall failed, fallback to keyword: ' + e.message, { requestId });
             }
         }
 
@@ -169,7 +169,7 @@ class MemoryEngine {
     }
 
     /** 向量语义检索 */
-    async _vectorRecall(query, topK) {
+    async _vectorRecall(query, topK, requestId) {
         const vector = await this._embed(query);
         // 多搜一些补偿孤儿 key（fast-hnsw 不支持 remove，旧向量残留）
         const results = this.vectorIndex.search(vector, topK * 2);
@@ -203,7 +203,7 @@ class MemoryEngine {
         scored.sort((a, b) => b._score - a._score);
         const top = scored.slice(0, topK);
 
-        log.info('vector recall: ' + top.length + ' results (query=' + query.slice(0, 30) + '...)');
+        log.info('vector recall: ' + top.length + ' results (query=' + query.slice(0, 30) + '...)', { requestId });
         this._updateRecallStats(top);
         return top.map(m => this._formatResult(m));
     }

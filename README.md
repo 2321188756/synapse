@@ -192,9 +192,9 @@ Python  →  AI 插件 (生图、搜索、数据分析)
 
 | 优先级 | Phase | 内容 |
 |:--:|------|------|
-| 🔴 P0 | 测试体系 | Jest 单元测试 + 集成测试，覆盖率 > 70% |
-| 🔴 P0 | 错误处理加固 | config schema 校验、上游降级提示、插件崩溃恢复 |
-| 🟡 P1 | 日志强化 | requestId 贯穿全链路，结构化日志 |
+| 🔴 P0 | 测试体系 | Jest 单元测试 + 集成测试，覆盖率 > 70% ← 🔄 |
+| 🔴 P0 | 错误处理加固 | config schema 校验、上游降级提示、插件崩溃恢复 ← 🔄 |
+| 🔴 P0 | 日志强化 | requestId 贯穿全链路，结构化日志 ← 🔄 |
 | 🟡 P1 | file_manager 插件 | 文件读写/列表，限定安全目录 |
 | 🟡 P1 | static 插件落地 | weather / time / system_info 注入 |
 | 🟡 P1 | 记忆自动巩固 | node-schedule 定时 L2→L3 提升 |

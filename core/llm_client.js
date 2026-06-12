@@ -117,7 +117,8 @@ async function* chatStream(messages, modelConfig, options = {}) {
     const label = isAnthropic(modelConfig.api_base) ? 'anthropic' : 'openai';
 
     const t0 = Date.now();
-    log.info('LLM call -> ' + label + ':' + modelName, { model: modelName, url });
+    const rid = options.requestId ? ` [${options.requestId}]` : '';
+    log.info('LLM call -> ' + label + ':' + modelName + rid, { model: modelName, url, requestId: options.requestId });
 
     const isStreaming = body.stream !== false;
     log.debug('LLM request: ' + url + ' | model=' + (body.model || '?'), { url, model: body.model, stream: body.stream });
