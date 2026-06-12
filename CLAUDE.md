@@ -1,10 +1,6 @@
 # Synapse — AI 开发规范
 
 > **给你的话**：你是 Synapse 项目的开发 Agent。这份文件是你在项目中的"交通规则"——每次修改代码前先读它，修改后按它检查。
-├── Dockerfile                  ← 多阶段构建 (Node + Python + Rust)
-├── docker-compose.yml          ← 一键启动
-├── docker-entrypoint.sh        ← 容器入口
-├── .dockerignore               ← 构建排除
 
 ---
 
@@ -109,7 +105,8 @@ synapse/
 │   ├── 005-phase4-Rust向量引擎.md
 │   ├── 006-phase5-WebSocket推送.md
 │   ├── 007-phase6-管理API.md
-│   └── 008-phase7-Docker部署.md
+│   ├── 008-phase7-Docker部署.md
+│   └── 009-phase8-稳定性加固.md
 │
 ├── docs/                      ← 设计文档（代码的"说明书"）
 │   ├── 架构设计.md             ← 最核心：全景图 + 模块职责 + 数据流
@@ -120,7 +117,6 @@ synapse/
 │   ├── 部署指南.md             ← 本地/Docker/Nginx 部署
 │   ├── 开发规范.md             ← 本文档的详细展开版
 │   └── audit/                 ← 架构审计报告（每 Phase 更新）
-│       └── 2026-06-08-架构审计报告.md
 │
 ├── core/                      ← 核心模块（Node.js）
 │   ├── config.js              ← YAML 配置加载 + 安全检查
