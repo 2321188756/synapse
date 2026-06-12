@@ -17,7 +17,7 @@ def safe_path(root, user_path):
 
 
 def cmd_read(root, params):
-    path = params.get("path", "").strip()
+    path = str(params.get("path", "")).strip()
     if not path:
         return {"status": "error", "error": "path 不能为空"}
 
@@ -43,8 +43,8 @@ def cmd_read(root, params):
 
 
 def cmd_write(root, params):
-    path = params.get("path", "").strip()
-    content = params.get("content", "")
+    path = str(params.get("path", "")).strip()
+    content = str(params.get("content", ""))
     if not path:
         return {"status": "error", "error": "path 不能为空"}
 
@@ -69,7 +69,7 @@ def cmd_write(root, params):
 
 
 def cmd_list(root, params):
-    path = params.get("path", "").strip() or "."
+    path = str(params.get("path", "")).strip() or "."
     safe = safe_path(root, path)
     if not safe:
         return {"status": "error", "error": "路径不允许"}
@@ -100,7 +100,7 @@ def cmd_list(root, params):
 
 
 def cmd_delete(root, params):
-    path = params.get("path", "").strip()
+    path = str(params.get("path", "")).strip()
     if not path:
         return {"status": "error", "error": "path 不能为空"}
 
@@ -129,7 +129,7 @@ def cmd_delete(root, params):
 
 
 def cmd_mkdir(root, params):
-    path = params.get("path", "").strip()
+    path = str(params.get("path", "")).strip()
     if not path:
         return {"status": "error", "error": "path 不能为空"}
 
