@@ -56,9 +56,9 @@ class MemoryEngine {
             const internals = pluginLoader.getInternals();
             this.embedder = internals.find(p => p.manifest.name === 'RAGNova') || null;
             if (this.embedder) {
-                log.info('embedder: rag_embedding ready (model=' + (this.embedder.config.model || 'unknown') + ')');
+                log.info('embedder: RAGNova ready (model=' + (this.embedder.config.model || 'unknown') + ')');
             } else {
-                log.info('embedder: rag_embedding not found');
+                log.info('embedder: RAGNova not found');
             }
         } catch (e) {
             log.warn('embedder: init failed — ' + e.message);
