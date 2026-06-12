@@ -15,6 +15,7 @@ tool:
     list  = 列出目录
     delete = 删除文件
     路径限制在 data/files/ 内，不能访问上层目录。
+    不要创建 .gitkeep 等隐藏占位文件。
 
   parameters:
     command:
