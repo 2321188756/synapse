@@ -9,7 +9,7 @@
 
 const { Router } = require('express');
 const { buildMessages } = require('../core/context_builder');
-const { chatStreamWithFallback, chat } = require('../core/llm_client');
+const { chat } = require('../core/llm_client');
 const { parseToolCalls, hasToolCalls, generateToolPrompt } = require('../core/tool_protocol');
 const { executeBatch } = require('../core/plugin_executor');
 const pluginLoader = require('../core/plugin_loader');
@@ -167,7 +167,8 @@ function createChatRouter(modelConfig, systemPrompt, log) {
             res.setHeader('Connection', 'keep-alive');
             res.setHeader('X-Request-ID', requestId);
 
-            const streamGen = chatStreamWithFallback(messages, modelConfig, { model, stream: true });
+            // 复用 loop 中 chat() 已拿到的 fullContent，不重复调 LLM
+            const streamGen = fakeStream(fullContent);
             return streamResponse(res, streamGen, requestId, modelConfig, chatLog, reqStart, 0);
 
         } catch (err) {

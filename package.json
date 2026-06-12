@@ -1,6 +1,6 @@
 {
   "name": "synapse",
-  "version": "1.0.0",
+  "version": "0.1.0-beta",
   "description": "个人 AI 中间层 — 工具调用、记忆系统、插件生态",
   "main": "server.js",
   "scripts": {

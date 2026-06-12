@@ -136,7 +136,7 @@ synapse/
 | 主服务 | **Node.js + Express 4** | 异步 I/O 天然适合 SSE 流式；生态成熟 |
 | 向量引擎 | **Rust (napi-rs)** | 极致性能，C++ FFI 零开销；对标 VCP 的 rust-vexus |
 | 插件运行 | **Python 子进程 (spawn)** | 语言无关；Python 是 AI 库的第一语言 |
-| 向量索引 | **USearch** (via Rust) | 千万级数据亚毫秒检索 |
+| 向量索引 | **fast-hnsw** (via Rust) | 纯 Rust HNSW，零 C 依赖，Windows 编译友好 |
 | 关系存储 | **SQLite** (better-sqlite3) | 单文件，同步 API 简单可靠 |
 | 进程管理 | **PM2** | Node.js 生态标配 |
 | 调试页面 | **原生 HTML + vanilla JS** | 零依赖 |
@@ -166,7 +166,7 @@ Python  →  AI 插件 (生图、搜索、数据分析)
 |------|:--:|:--:|:--:|:--:|
 | 定位 | 个人 AI 中间层 | AI 存在基础设施 | 开发框架 | 企业平台 |
 | 主语言 | **Node.js** | **Node.js** | Python | Python |
-| 向量引擎 | Rust USearch | Rust USearch | 无内置 | 向量库 |
+| 向量引擎 | Rust fast-hnsw | Rust USearch | 无内置 | 向量库 |
 | 插件化 | 目录即插件 | 目录即插件 | 代码级 | 可视化 |
 | 调试页面 | **内置** | 需独立前端 | 无 | 内置 |
 | 模型无关 | ✅ 自定义协议 | ✅ 自定义协议 | ⚠️ | ⚠️ |
@@ -185,6 +185,27 @@ Python  →  AI 插件 (生图、搜索、数据分析)
 - [x] Phase 5: WebSocket 推送 + 异步工具回调
 - [x] Phase 6: 管理 API — 插件热重载 + 记忆管理
 - [x] Phase 7: Docker 一键部署
+
+---
+
+## V0.2 路线图（beta → 稳定）
+
+| 优先级 | Phase | 内容 |
+|:--:|------|------|
+| 🔴 P0 | 测试体系 | Jest 单元测试 + 集成测试，覆盖率 > 70% |
+| 🔴 P0 | 错误处理加固 | config schema 校验、上游降级提示、插件崩溃恢复 |
+| 🟡 P1 | 日志强化 | requestId 贯穿全链路，结构化日志 |
+| 🟡 P1 | file_manager 插件 | 文件读写/列表，限定安全目录 |
+| 🟡 P1 | static 插件落地 | weather / time / system_info 注入 |
+| 🟡 P1 | 记忆自动巩固 | node-schedule 定时 L2→L3 提升 |
+| 🟡 P1 | 对话持久化 | 会话历史保存 + 恢复 |
+| 🟢 P2 | Agent 模式 | AI 自主多步任务执行 |
+| 🟢 P2 | image_gen 插件 | DALL-E / Stable Diffusion |
+| 🟢 P2 | CLI 工具 | 插件脚手架、记忆查询、配置管理 |
+| 🟢 P2 | 多模态支持 | 图片理解 + 文件上传 |
+| 🟢 P2 | OpenAPI 文档 | Swagger 自动生成 |
+
+**V0.2-beta 里程碑**：前 3 项 P0 完成后发布。
 
 ---
 
