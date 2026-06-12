@@ -128,6 +128,28 @@ def cmd_delete(root, params):
     }
 
 
+def cmd_mkdir(root, params):
+    path = params.get("path", "").strip()
+    if not path:
+        return {"status": "error", "error": "path 不能为空"}
+
+    safe = safe_path(root, path)
+    if not safe:
+        return {"status": "error", "error": "路径不允许"}
+
+    try:
+        os.makedirs(safe, exist_ok=True)
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+    return {
+        "status": "success",
+        "action": "mkdir",
+        "content": f"目录已创建: {path}",
+        "data": {"path": path}
+    }
+
+
 def execute(params, config):
     root = config.get("root_path", "data/files")
     # 转为绝对路径（相对于项目根目录）
@@ -141,6 +163,8 @@ def execute(params, config):
         return cmd_list(abs_root, params)
     elif cmd == "delete":
         return cmd_delete(abs_root, params)
+    elif cmd == "mkdir":
+        return cmd_mkdir(abs_root, params)
     return cmd_read(abs_root, params)
 
 
