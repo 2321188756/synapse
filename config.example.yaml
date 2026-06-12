@@ -82,7 +82,7 @@ plugins:
   # 例如: ["image_gen", "video_gen"]
   #
   # 插件专属配置也可以写在这里，优先级高于 manifest.yaml 中的默认值:
-  # web_search:
+  # WebSearch:
   #   TAVILY_API_KEY: "tvly-your-key"
 
 # ---- 安全设置 ----
