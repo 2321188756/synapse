@@ -15,7 +15,8 @@ tool:
     list  = 列出目录
     delete = 删除文件
     路径限制在 data/files/ 内，不能访问上层目录。
-    不要创建 .gitkeep 等隐藏占位文件。
+    ⚠️ 只创建用户明确指定的文件，不要自动生成 .gitkeep/init.txt/readme.md 等占位文件。
+    用户说"创建计划"时，在已有文件中写入计划内容，而非新建占位文件。
 
   parameters:
     command:
