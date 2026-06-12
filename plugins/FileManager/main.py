@@ -3,7 +3,7 @@
 路径穿越防护：所有操作限定在 root_path 内（默认 data/files/）。
 """
 
-import sys, json, os, io
+import sys, json, os, io, shutil
 
 
 def safe_path(root, user_path):
@@ -112,7 +112,11 @@ def cmd_delete(root, params):
         return {"status": "error", "error": f"文件不存在: {path}"}
 
     try:
-        os.remove(safe)
+        if os.path.isdir(safe):
+            shutil.rmtree(safe)
+            return {"status": "success", "action": "delete", "content": f"目录已删除: {path}", "data": {"path": path}}
+        else:
+            os.remove(safe)
     except Exception as e:
         return {"status": "error", "error": str(e)}
 
