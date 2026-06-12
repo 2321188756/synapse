@@ -99,9 +99,7 @@ body {
 /* TOOL CALL CARD */
 .tool-card {
   align-self: flex-start; width: 82%; background: var(--tool-bg);
-  border-radius: var(--radius); overflow: hidden; animation: fadeIn .3s ease;
-  max-height: 60px; /* collapse when closed */
-.tool-card.open { overflow: visible; max-height: none; }
+  border-radius: var(--radius); animation: fadeIn .3s ease;
   border-left: 3px solid var(--accent);
 }
 .tool-card.success { border-left-color: var(--green); }
@@ -118,9 +116,8 @@ body {
 .tool-card-header .status.ok     { background: rgba(62,207,142,.15); color: var(--green); }
 .tool-card-header .status.done   { background: rgba(62,207,142,.15); color: var(--green); }
 .tool-card-header .status.fail   { background: rgba(242,92,92,.15); color: var(--red); }
-.tool-card-body { padding: 10px 14px; max-height: 80vh; overflow-y: auto; }
-.tool-card .tool-card-body { display: none; }
-.tool-card.open .tool-card-body { display: block; }
+.tool-card-body { display: none; }
+.tool-card.open .tool-card-body { display: block; padding: 10px 14px; max-height: 80vh; overflow-y: auto; }
 .tool-card-body pre {
   background: rgba(0,0,0,.3); padding: 10px 12px; border-radius: 6px;
   font-size: 12px; line-height: 1.5; overflow-x: auto; white-space: pre-wrap; color: var(--text2);
