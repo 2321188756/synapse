@@ -28,13 +28,12 @@ class WsServer {
             server: httpServer,
             path: '/ws',
             verifyClient: (info, cb) => {
-                // 从 query string 取 token
-                const url = new URL(info.req.url, 'http://localhost');
-                const token = url.searchParams.get('token') || '';
-                if (token === apiKey) {
-                    cb(true);
-                } else {
-                    cb(false, 401, 'Unauthorized');
+                try {
+                    const url = new URL(info.req.url, 'http://localhost');
+                    const token = url.searchParams.get('token') || '';
+                    cb(token === apiKey, token === apiKey ? undefined : 401, token === apiKey ? undefined : 'Unauthorized');
+                } catch (_) {
+                    cb(false, 400, 'Bad request');
                 }
             },
         });

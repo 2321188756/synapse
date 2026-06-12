@@ -202,7 +202,6 @@ async function streamChat(userContent) {
             try {
               var card = JSON.parse(jsonStr);
               if (card && card.t) {
-                console.log('[tool-card]', card.t, card.s);
                 addToolCard(card.t, card.s, card.p || '');
               }
               delta = prefix;
