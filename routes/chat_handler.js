@@ -14,9 +14,34 @@ const { parseToolCalls, hasToolCalls, generateToolPrompt } = require('../core/to
 const { executeBatch } = require('../core/plugin_executor');
 const pluginLoader = require('../core/plugin_loader');
 const memoryEngine = require('../core/memory_engine');
+const { execute } = require('../core/plugin_executor');
 
 const router = Router();
 const MAX_TOOL_ROUNDS = 5;
+
+// Static 插件缓存（key: pluginName, value: { content, ts }）
+const _staticCache = new Map();
+const STATIC_CACHE_TTL = 60000; // 60s
+
+async function getStaticVariables(pluginLoader) {
+    const vars = {};
+    for (const p of pluginLoader.getStatics()) {
+        const name = p.manifest.name;
+        const interval = (p.manifest.static?.interval || 300) * 1000;
+        const cached = _staticCache.get(name);
+        if (cached && (Date.now() - cached.ts) < interval) {
+            vars[p.manifest.static?.placeholder || name] = cached.content;
+            continue;
+        }
+        try {
+            const result = await execute(p, { name, params: {} });
+            const content = result.status === 'success' ? (result.content || '') : '';
+            _staticCache.set(name, { content, ts: Date.now() });
+            vars[p.manifest.static?.placeholder || name] = content;
+        } catch (_) { /* skip failed statics */ }
+    }
+    return vars;
+}
 
 // 辅助函数
 function modelName(cfg) { return cfg?.primary || 'unknown'; }
@@ -49,6 +74,12 @@ function createChatRouter(modelConfig, systemPrompt, log) {
                 chatLog.info('  memory content: ' + memories.map(m => m.content).join(' | '), { requestId });
             }
 
+            // Static 插件注入（带 60s 缓存）
+            const staticVars = await getStaticVariables(pluginLoader);
+            for (const [k, v] of Object.entries(staticVars)) {
+                chatLog.info('  static: ' + k + '=' + v.slice(0, 60), { requestId });
+            }
+
             // 上下文装配 (注入工具列表 + 记忆)
             const toolPrompt = generateToolPrompt(pluginLoader.getTools());
             chatLog.info('  tools injected: ' + (toolPrompt ? toolPrompt.length + ' chars' : 'none'), { requestId });
@@ -60,6 +91,7 @@ function createChatRouter(modelConfig, systemPrompt, log) {
                 variables: {
                     __tool_prompt: toolPrompt,
                     __memories: memoryEngine.formatForContext(memories),
+                    ...staticVars,
                 },
             });
 

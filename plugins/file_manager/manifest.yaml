@@ -1,0 +1,60 @@
+name: file_manager
+display_name: 文件管理
+version: 1.0.0
+description: 安全文件读写/列表/删除，限定 data/files/ 目录
+type: tool
+runtime: subprocess
+entry: main.py
+enabled: true
+
+tool:
+  instruction: |
+    用于读写 data/files/ 下的文件。
+    - read: 读取文件内容
+    - write: 写入/覆盖文件
+    - list: 列出目录文件
+    - delete: 删除文件（需确认）
+    路径自动限制在 data/files/ 内，不能访问上层目录。
+
+  parameters:
+    command:
+      type: string
+      description: 操作类型
+      enum: [read, write, list, delete]
+      required: true
+    path:
+      type: string
+      description: 文件路径（相对于 data/files/）
+      required: true
+    content:
+      type: string
+      description: 写入内容（write 时必填）
+
+  examples:
+    - description: 读取文件
+      call: |
+        <<<TOOL>>>
+        name: file_manager
+        params:
+          command: read
+          path: notes/ideas.txt
+        <<<END>>>
+    - description: 写入文件
+      call: |
+        <<<TOOL>>>
+        name: file_manager
+        params:
+          command: write
+          path: notes/summary.md
+          content: |
+            # 会议纪要
+            今天讨论了架构设计
+        <<<END>>>
+
+  timeout: 10
+
+config:
+  root_path:
+    type: string
+    description: 文件操作根目录
+    default: data/files

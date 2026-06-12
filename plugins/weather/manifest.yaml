@@ -1,0 +1,21 @@
+name: weather
+display_name: 天气
+version: 1.0.0
+description: 当前天气占位符 {{Weather}}，更新间隔 1800s
+type: static
+entry: main.py
+enabled: true
+
+static:
+  placeholder: Weather
+  interval: 1800
+
+config:
+  city:
+    type: string
+    description: 城市
+    default: 北京
+  api_key:
+    type: string
+    description: 天气 API Key (和风天气或 OpenWeather)
+    default: ""

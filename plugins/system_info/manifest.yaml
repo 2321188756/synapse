@@ -1,0 +1,11 @@
+name: system_info
+display_name: 系统信息
+version: 1.0.0
+description: 系统信息占位符 {{SystemInfo}}，CPU/内存/磁盘
+type: static
+entry: main.py
+enabled: true
+
+static:
+  placeholder: SystemInfo
+  interval: 300
