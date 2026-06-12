@@ -132,7 +132,7 @@ synapse/
 ├── plugins/                   ← 插件目录
 │   ├── WebSearch/            ← 联网搜索 (Tavily)
 │   ├── DailyNote/            ← 日记插件 (记忆写入/更新)
-│   └── RagEmbedding/         ← RAG 向量化 (type: internal)
+│   └── RAGNova/              ← RAG 向量化 (type: internal)
 ├── rust-vector/               ← Rust 向量引擎（N-API）
 │   ├── Cargo.toml
 │   ├── src/lib.rs             ← fast-hnsw 索引核心
