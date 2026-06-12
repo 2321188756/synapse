@@ -181,8 +181,10 @@ function createChatRouter(modelConfig, systemPrompt, log) {
                         const name = tr.calls[i].name;
                         const result = tr.results[i] || {};
                         const ok = result.status === 'success';
+                        const rawCmd = (tr.calls[i].params?.command || '');
+                        const rawCall = '<<<TOOL>>>\nname: ' + name + (rawCmd ? '\ncommand: ' + rawCmd : '') + '\n  ...';
                         const preview = (result.content || result.error || '').replace(/\n/g, '\\n');
-                        const cardData = JSON.stringify({ t: name, s: ok ? 'ok' : 'fail', p: preview });
+                        const cardData = JSON.stringify({ t: name, s: ok ? 'ok' : 'fail', p: preview, r: rawCall });
                         sseWrite(res, requestId, modelName(modelConfig), '🔧TOOL' + cardData);
                         cardCount++;
                     }

@@ -81,7 +81,7 @@ function addSysMsg(content) {
 }
 
 // ========== TOOL CARD ==========
-function addToolCard(name, status, preview) {
+function addToolCard(name, status, preview, rawCall) {
   var fullText = (preview||'').replace(/\\n/g, '\n');
   var shortText = fullText.slice(0, 200);
   var isLong = fullText.length > 200;
@@ -102,7 +102,8 @@ function addToolCard(name, status, preview) {
 
   var body = document.createElement('div');
   body.className = 'tool-card-body';
-  body.innerHTML = '<pre>' + (isLong ? shortText : fullText) + '</pre>';
+  var rawHtml = rawCall ? '<pre style=\"color:var(--text3);font-size:11px;margin-bottom:6px\">' + rawCall.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>' : '';
+  body.innerHTML = rawHtml + '<pre>' + (isLong ? shortText : fullText) + '</pre>';
 
   card.appendChild(header);
   card.appendChild(body);
@@ -202,7 +203,7 @@ async function streamChat(userContent) {
             try {
               var card = JSON.parse(jsonStr);
               if (card && card.t) {
-                addToolCard(card.t, card.s, card.p || '');
+                addToolCard(card.t, card.s, card.p || '', card.r || '');
               }
               delta = prefix;
               toolBuf = '';
@@ -243,7 +244,7 @@ function connectWs() {
       try {
         var msg = JSON.parse(e.data);
         if (msg.type === 'tool_result') {
-          addToolCard(msg.name, msg.status, msg.content);
+          addToolCard(msg.name, msg.status, msg.content, msg.raw || '');
         }
       } catch(_) {}
     };
