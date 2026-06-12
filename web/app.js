@@ -83,8 +83,6 @@ function addSysMsg(content) {
 // ========== TOOL CARD ==========
 function addToolCard(name, status, preview, rawCall) {
   var fullText = (preview||'').replace(/\\n/g, '\n');
-  var shortText = fullText.slice(0, 200);
-  var isLong = fullText.length > 200;
   var ok = status === 'ok';
   var card = document.createElement('div');
   card.className = 'tool-card ' + (ok ? 'success' : 'fail');
@@ -97,45 +95,26 @@ function addToolCard(name, status, preview, rawCall) {
     '<span class="icon">' + icon + '</span>' +
     '<span class="name">TOOL: ' + name + '</span>' +
     '<span class="status ' + status + '">' + label + '</span>' +
-    (isLong ? '<span class="expand-hint">展开▼</span>' : '') +
     '<span class="chevron">▶</span>';
 
   var body = document.createElement('div');
   body.className = 'tool-card-body';
-  var rawHtml = rawCall ? '<pre style=\"color:var(--text3);font-size:11px;margin-bottom:6px\">' + rawCall.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>' : '';
-  body.innerHTML = rawHtml + '<pre>' + (isLong ? shortText : fullText) + '</pre>';
+  var rawHtml = rawCall ? '<pre style=\"color:var(--text3);font-size:11px;margin-bottom:8px\">' + rawCall.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>' : '';
+  body.innerHTML = rawHtml + '<pre>' + fullText + '</pre>';
 
   card.appendChild(header);
   card.appendChild(body);
-  card._full = fullText;
-  card._short = shortText;
-  card._isLong = isLong;
 
   // 默认展开
   card.classList.add('open');
   var chev = header.querySelector('.chevron');
   if (chev) chev.textContent = '▼';
-  if (isLong) {
-    var hint = header.querySelector('.expand-hint');
-    if (hint) hint.textContent = '收起▲';
-  }
 
   header.addEventListener('click', function() {
     var open = card.classList.toggle('open');
-    var pre = body.querySelector('pre');
-    var hint = header.querySelector('.expand-hint');
     var ch = header.querySelector('.chevron');
-    if (isLong) {
-      pre.textContent = open ? fullText : shortText;
-      if (hint) hint.textContent = open ? '收起▲' : '展开▼';
-    }
     if (ch) ch.textContent = open ? '▼' : '▶';
   });
-
-  // 5 秒后自动折叠
-  setTimeout(function() {
-    if (card.classList.contains('open')) header.click();
-  }, 5000);
 
   document.getElementById('chatArea').appendChild(card);
   scrollDown();
