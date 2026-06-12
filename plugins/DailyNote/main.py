@@ -61,6 +61,9 @@ def execute(params, config):
 if __name__ == '__main__':
     import io
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    input_data = json.loads(sys.stdin.read())
-    result = execute(input_data.get('params', {}), input_data.get('config', {}))
+    try:
+        input_data = json.loads(sys.stdin.read())
+        result = execute(input_data.get('params', {}), input_data.get('config', {}))
+    except Exception as e:
+        result = {'status': 'error', 'error': str(e)}
     print(json.dumps(result, ensure_ascii=False))
