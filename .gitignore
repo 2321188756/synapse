@@ -1,3 +1,6 @@
+# 测试
+coverage/
+
 # 日志
 *.log
 logs/
