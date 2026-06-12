@@ -22,8 +22,6 @@ const MAX_TOOL_ROUNDS = 5;
 
 // Static 插件缓存（key: pluginName, value: { content, ts }）
 const _staticCache = new Map();
-const STATIC_CACHE_TTL = 60000; // 60s
-
 async function getStaticVariables(pluginLoader) {
     const vars = {};
     for (const p of pluginLoader.getStatics()) {

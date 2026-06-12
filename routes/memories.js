@@ -11,6 +11,9 @@ const router = Router();
 const database = require('../core/database');
 const memoryEngine = require('../core/memory_engine');
 
+// ensure database is initialized before use
+const db = () => database.get();
+
 router.get('/memories', (req, res) => {
     try {
         const { layer, tags, q, limit, offset } = req.query;
@@ -78,7 +81,7 @@ router.get('/memories/related', (req, res) => {
     try {
         const tag = req.query.tag;
         if (!tag) return res.status(400).json({ error: '需要 tag 参数' });
-        const db = require('../core/database').get();
+        const db = database.get();
         const rows = db.prepare(`
             SELECT tag_b as tag, weight FROM tag_co_occurrence WHERE tag_a = ?
             UNION
