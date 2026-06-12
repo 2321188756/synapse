@@ -131,6 +131,14 @@ async function executeBatch(pluginLoader, toolCalls) {
             const t0 = Date.now();
             const result = await execute(plugin, tc);
             log.info(`tool executed: ${tc.name} (${Date.now() - t0}ms) ${result.status}`);
+
+            // 失败计数 + 自动禁用
+            if (result.status === 'success') {
+                pluginLoader.recordSuccess(tc.name);
+            } else {
+                pluginLoader.recordFailure(tc.name);
+            }
+
             return result;
         })
     );

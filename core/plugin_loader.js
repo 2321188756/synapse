@@ -18,6 +18,34 @@ class PluginLoader {
     constructor() {
         /** @type {Map<string, { dir: string, manifest: object, config: object }>} */
         this.plugins = new Map();
+        /** 连续失败计数（成功时清零，失败达阈值自动禁用）*/
+        this._failures = new Map();
+        this.MAX_FAILURES = 5;
+    }
+
+    /** 记录失败，返回是否已自动禁用 */
+    recordFailure(name) {
+        const count = (this._failures.get(name) || 0) + 1;
+        this._failures.set(name, count);
+        if (count >= this.MAX_FAILURES) {
+            const plugin = this.plugins.get(name);
+            if (plugin) {
+                plugin.manifest.enabled = false;
+                log.warn(`plugin auto-disabled after ${count} consecutive failures: ${name}`);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /** 成功后清零 */
+    recordSuccess(name) {
+        this._failures.delete(name);
+    }
+
+    /** 插件失败状态 */
+    getFailureCount(name) {
+        return this._failures.get(name) || 0;
     }
 
     /**
