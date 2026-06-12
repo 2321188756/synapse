@@ -160,6 +160,8 @@ const memoriesRouter = require('./routes/memories');
 
 app.use('/api', healthRouter);
 app.use('/api', memoriesRouter);
+app.use('/api', require('./routes/plugins'));
+app.use('/api', require('./routes/config'));
 app.use('/v1', createModelsRouter(CONFIG.models));
 app.use('/v1', createChatRouter(CONFIG.models, DEFAULT_SYSTEM_PROMPT, log));
 

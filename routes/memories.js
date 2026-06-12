@@ -24,10 +24,49 @@ router.get('/memories', (req, res) => {
     }
 });
 
+router.put('/memories/:id', (req, res) => {
+    try {
+        const { tags, importance } = req.body;
+        const updates = {};
+        if (tags !== undefined) updates.tags = Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim());
+        if (importance !== undefined) updates.importance = parseFloat(importance);
+        if (Object.keys(updates).length === 0) return res.status(400).json({ error: '无有效更新字段' });
+        const result = memoryEngine.modify(req.params.id, updates);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 router.delete('/memories/:id', (req, res) => {
     try {
         memoryEngine.forget(req.params.id);
         res.json({ status: 'ok' });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// POST /api/memories/consolidate — 手动触发记忆巩固（去重 + 合并）
+router.post('/memories/consolidate', (_req, res) => {
+    try {
+        const db = require('../core/database').get();
+        // 简单去重：合并内容完全相同的记忆，保留最早的，删除其余的
+        const dupes = db.prepare(`
+            SELECT content, COUNT(*) as cnt, MIN(id) as keep_id
+            FROM memories GROUP BY content HAVING cnt > 1
+        `).all();
+        let removed = 0;
+        for (const d of dupes) {
+            const toDelete = db.prepare(
+                "SELECT id FROM memories WHERE content = ? AND id != ?"
+            ).all(d.content, d.keep_id);
+            for (const row of toDelete) {
+                memoryEngine.forget(row.id);
+                removed++;
+            }
+        }
+        res.json({ status: 'ok', duplicates_found: dupes.length, removed });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

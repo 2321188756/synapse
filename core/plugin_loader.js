@@ -99,10 +99,18 @@ class PluginLoader {
         return this.plugins.get(name) || null;
     }
 
-    /** 热重载 */
+    /** 热重载，返回变更 diff */
     reload(globalPluginConfig) {
+        const oldNames = new Set(this.plugins.keys());
         this.plugins.clear();
         this.discover(globalPluginConfig);
+        const newNames = new Set(this.plugins.keys());
+
+        const added = [...newNames].filter(n => !oldNames.has(n));
+        const removed = [...oldNames].filter(n => !newNames.has(n));
+        const updated = [...newNames].filter(n => oldNames.has(n));
+
+        return { added, removed, updated, total: this.plugins.size };
     }
 }
 

@@ -170,8 +170,8 @@ Python  →  AI 插件 (生图、搜索、数据分析)
 - [x] Phase 2: 工具协议解析 + 第一个插件 (web_search)
 - [x] Phase 3: 记忆系统 — 向量检索 + 标签索引 + 日记插件
 - [x] Phase 4: Rust 向量引擎 — N-API 绑定 + fast-hnsw 集成
-- [ ] Phase 5: WebSocket 推送 + 异步工具回调 ← 🔄 今日启动
-- [ ] Phase 6: 管理 API — 插件热重载 + 记忆管理
+- [x] Phase 5: WebSocket 推送 + 异步工具回调
+- [ ] Phase 6: 管理 API — 插件热重载 + 记忆管理 ← 🔄 今日启动
 - [ ] Phase 7: Docker 一键部署
 
 ---

@@ -102,7 +102,8 @@ synapse/
 │   ├── 002-phase1-后端骨架.md
 │   ├── 003-phase2-工具协议.md
 │   ├── 004-phase3-记忆系统.md
-│   └── 005-phase4-Rust向量引擎.md
+│   ├── 005-phase4-Rust向量引擎.md
+│   └── 006-phase5-WebSocket推送.md
 │
 ├── docs/                      ← 设计文档（代码的"说明书"）
 │   ├── 架构设计.md             ← 最核心：全景图 + 模块职责 + 数据流
