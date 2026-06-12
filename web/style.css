@@ -99,7 +99,7 @@ body {
 /* TOOL CALL CARD */
 .tool-card {
   align-self: flex-start; width: 82%; background: var(--tool-bg);
-  border-radius: var(--radius); overflow: hidden; animation: fadeIn .3s ease;
+  border-radius: var(--radius); overflow: visible; animation: fadeIn .3s ease;
   border-left: 3px solid var(--accent);
 }
 .tool-card.success { border-left-color: var(--green); }
