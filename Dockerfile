@@ -3,6 +3,8 @@
 
 FROM node:22-alpine
 
+# httpx 是 rag_embedding 必需依赖；web_search 有 urllib 回退，daily_note 无外部依赖
+# 如需完整 requirements.txt 依赖：先 apk add gcc musl-dev 再 pip install -r requirements.txt
 RUN apk add --no-cache python3 py3-pip && \
     pip3 install --no-cache-dir httpx --break-system-packages
 
@@ -11,7 +13,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-COPY rust-vector/synapse-vector.node rust-vector/index.js rust-vector/package.json ./rust-vector/
+COPY rust-vector/*.node rust-vector/index.js rust-vector/package.json ./rust-vector/
 COPY core/ ./core/
 COPY routes/ ./routes/
 COPY modules/ ./modules/
