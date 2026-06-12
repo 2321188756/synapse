@@ -130,9 +130,9 @@ synapse/
 ├── modules/                   ← 可复用模块
 │   └── logger.js              ← winston 封装 + 内存缓冲
 ├── plugins/                   ← 插件目录
-│   ├── web_search/            ← 联网搜索 (Tavily)
-│   ├── daily_note/            ← 日记插件 (记忆写入/更新)
-│   └── rag_embedding/         ← RAG 向量化 (type: internal)
+│   ├── WebSearch/            ← 联网搜索 (Tavily)
+│   ├── DailyNote/            ← 日记插件 (记忆写入/更新)
+│   └── RagEmbedding/         ← RAG 向量化 (type: internal)
 ├── rust-vector/               ← Rust 向量引擎（N-API）
 │   ├── Cargo.toml
 │   ├── src/lib.rs             ← fast-hnsw 索引核心
