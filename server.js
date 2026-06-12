@@ -54,6 +54,11 @@ memoryEngine.init();
 
 // ========== Express 初始化 ==========
 const app = express();
+const httpServer = http.createServer(app);
+
+// WebSocket 服务（复用 HTTP 端口，/ws 升级）
+const wsServer = require('./core/ws_server');
+wsServer.init(httpServer, API_KEY);
 
 // 中间件
 app.use(cors({ origin: CONFIG.security?.cors_origins || ['*'] }));
@@ -186,7 +191,7 @@ app.use((err, req, res, _next) => {
 const SERVER_LIFECYCLE = { RUNNING: 'RUNNING', DRAINING: 'DRAINING' };
 let lifecycleState = SERVER_LIFECYCLE.RUNNING;
 
-const server = app.listen(PORT, HOST, () => {
+const server = httpServer.listen(PORT, HOST, () => {
     log.info(`Synapse 启动: http://${HOST}:${PORT}`);
     log.info(`  调试页: http://localhost:${PORT}/`);
     log.info(`  API:    http://localhost:${PORT}/v1/chat/completions`);

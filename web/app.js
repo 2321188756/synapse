@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   window.checkHealth();
   loadModels();
+  connectWs();
 });
 
 function saveSettings() {
@@ -226,3 +227,33 @@ async function streamChat(userContent) {
 
 function newSession() { messages=[]; document.getElementById('chatArea').innerHTML=''; addSysMsg('新对话'); }
 function clearAll() { if (confirm('确定清空？')) { messages=[]; document.getElementById('chatArea').innerHTML=''; addSysMsg('已清空'); }}
+
+// ========== WebSocket ==========
+var _ws = null;
+function connectWs() {
+  var key = document.getElementById('apiKey').value;
+  if (!key) { setTimeout(connectWs, 3000); return; }
+  var base = document.getElementById('apiBase').value.replace(/\/$/,'').replace('/v1','');
+  var wsUrl = base.replace('http://', 'ws://').replace('https://', 'wss://') + '/ws?token=' + encodeURIComponent(key);
+  try {
+    _ws = new WebSocket(wsUrl);
+    _ws.onopen = function() { updateWsStatus(true); };
+    _ws.onclose = function() { updateWsStatus(false); setTimeout(connectWs, 5000); };
+    _ws.onerror = function() { _ws.close(); };
+    _ws.onmessage = function(e) {
+      try {
+        var msg = JSON.parse(e.data);
+        if (msg.type === 'tool_result') {
+          addToolCard(msg.name, msg.status, msg.content);
+        }
+      } catch(_) {}
+    };
+  } catch(_) { setTimeout(connectWs, 5000); }
+}
+
+function updateWsStatus(connected) {
+  var dot = document.getElementById('wsDot');
+  if (dot) dot.className = 'status-dot ' + (connected ? 'online' : 'offline');
+  var text = document.getElementById('wsText');
+  if (text) text.textContent = connected ? 'WS 已连接' : 'WS 断开';
+}

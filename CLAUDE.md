@@ -101,7 +101,8 @@ synapse/
 │   ├── 001-phase0-项目初始化.md
 │   ├── 002-phase1-后端骨架.md
 │   ├── 003-phase2-工具协议.md
-│   └── 004-phase3-记忆系统.md
+│   ├── 004-phase3-记忆系统.md
+│   └── 005-phase4-Rust向量引擎.md
 │
 ├── docs/                      ← 设计文档（代码的"说明书"）
 │   ├── 架构设计.md             ← 最核心：全景图 + 模块职责 + 数据流
@@ -127,13 +128,19 @@ synapse/
 │   └── logger.js              ← winston 封装 + 内存缓冲
 ├── plugins/                   ← 插件目录
 │   ├── web_search/            ← 联网搜索 (Tavily)
-│   └── daily_note/            ← 日记插件 (记忆写入/更新)
+│   ├── daily_note/            ← 日记插件 (记忆写入/更新)
+│   └── rag_embedding/         ← RAG 向量化 (type: internal)
 ├── rust-vector/               ← Rust 向量引擎（N-API）
+│   ├── Cargo.toml
+│   ├── src/lib.rs             ← fast-hnsw 索引核心
+│   └── index.js               ← N-API 加载桥接
 ├── routes/                    ← Express 路由
 │   ├── chat_handler.js        ← POST /v1/chat/completions
 │   ├── health.js              ← GET /api/health (+上游探测)
-│   ├── models.js              ← GET /v1/models
+│   ├── models.js              ← GET /v1/models (从上游拉取)
 │   └── memories.js            ← 记忆管理 CRUD
+├── scripts/                   ← 运维脚本
+│   └── migrate-embeddings.js  ← 批量向量化迁移
 ├── web/                       ← 内置调试页面
 │   ├── index.html             ← HTML 骨架 (58行)
 │   ├── style.css              ← 深色主题样式

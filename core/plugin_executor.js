@@ -98,7 +98,8 @@ function execute(plugin, toolCall) {
 }
 
 /**
- * 并发执行多个工具调用
+ * 并发执行多个工具调用。
+ * 异步工具（params.async 或 manifest.tool.async）不阻塞，立即返回 "submitted"。
  */
 async function executeBatch(pluginLoader, toolCalls) {
     const results = await Promise.all(
@@ -107,6 +108,26 @@ async function executeBatch(pluginLoader, toolCalls) {
             if (!plugin) {
                 return { status: 'error', content: '', error: `工具 '${tc.name}' 不存在` };
             }
+
+            const isAsync = tc.params?.async || plugin.manifest?.tool?.async;
+
+            if (isAsync) {
+                // 异步：fire-and-forget，完成后 WS 推送
+                execute(plugin, tc).then(result => {
+                    try {
+                        require('./ws_server').broadcast({
+                            type: 'tool_result',
+                            name: tc.name,
+                            status: result.status,
+                            content: result.content || result.error || '',
+                            ts: Date.now(),
+                        });
+                    } catch (_) { /* ws not available */ }
+                }).catch(() => {});
+                log.info(`tool submitted (async): ${tc.name}`);
+                return { status: 'submitted', content: `工具 ${tc.name} 已提交，完成后通知`, async: true };
+            }
+
             const t0 = Date.now();
             const result = await execute(plugin, tc);
             log.info(`tool executed: ${tc.name} (${Date.now() - t0}ms) ${result.status}`);
