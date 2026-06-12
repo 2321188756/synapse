@@ -1,4 +1,4 @@
-name: rag_embedding
+name: RagEmbedding
 display_name: RAG Embedding
 version: 1.0.0
 description: 调用 Embedding API 生成文本向量，供 memory_engine 使用

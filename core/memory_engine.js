@@ -54,7 +54,7 @@ class MemoryEngine {
         try {
             const pluginLoader = require('./plugin_loader');
             const internals = pluginLoader.getInternals();
-            this.embedder = internals.find(p => p.manifest.name === 'rag_embedding') || null;
+            this.embedder = internals.find(p => p.manifest.name === 'RagEmbedding') || null;
             if (this.embedder) {
                 log.info('embedder: rag_embedding ready (model=' + (this.embedder.config.model || 'unknown') + ')');
             } else {
@@ -253,7 +253,7 @@ class MemoryEngine {
 
     /** 调用 rag_embedding 插件生成向量 */
     async _embed(text) {
-        const result = await execute(this.embedder, { name: 'rag_embedding', params: { text } });
+        const result = await execute(this.embedder, { name: 'RagEmbedding', params: { text } });
         if (result.status !== 'success') {
             throw new Error(result.error || 'embedding failed');
         }

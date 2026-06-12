@@ -33,11 +33,11 @@ const log = createLogger(CONFIG);
 // ========== 插件初始化 ==========
 const pluginLoader = require('./core/plugin_loader');
 
-// 注入 embedding 配置到 rag_embedding 插件（支持独立 API 地址或复用 models.api_base）
+// 注入 embedding 配置到 RagEmbedding 插件（支持独立 API 地址或复用 models.api_base）
 const pluginConfig = { ...(CONFIG.plugins || {}) };
 if (CONFIG.models?.embedding) {
     const emb = CONFIG.models.embedding;
-    pluginConfig.rag_embedding = {
+    pluginConfig.RagEmbedding = {
         model: emb.model,
         dimension: emb.dimension,
         api_base: emb.api_base || CONFIG.models.api_base,

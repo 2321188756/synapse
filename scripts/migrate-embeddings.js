@@ -13,7 +13,7 @@ config.init();
 pluginLoader.discover(config.get().plugins || {});
 
 const db = database.get();
-const embedder = pluginLoader.getInternals().find(p => p.manifest.name === 'rag_embedding');
+const embedder = pluginLoader.getInternals().find(p => p.manifest.name === 'RagEmbedding');
 if (!embedder) {
     console.error('ERROR: rag_embedding plugin not found');
     process.exit(1);
@@ -61,7 +61,7 @@ async function migrate() {
     let done = 0;
     for (const row of rows) {
         try {
-            const result = await execute(embedder, { name: 'rag_embedding', params: { text: row.content } });
+            const result = await execute(embedder, { name: 'RagEmbedding', params: { text: row.content } });
             if (result.status !== 'success') {
                 console.error(`  FAIL ${row.id}: ${result.error}`);
                 continue;

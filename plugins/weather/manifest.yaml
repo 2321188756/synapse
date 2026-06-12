@@ -1,4 +1,4 @@
-name: weather
+name: Weather
 display_name: 天气
 version: 1.0.0
 description: 当前天气占位符 {{Weather}}，更新间隔 1800s

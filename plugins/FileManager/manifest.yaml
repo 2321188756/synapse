@@ -1,4 +1,4 @@
-name: file_manager
+name: FileManager
 display_name: 文件管理
 version: 1.0.0
 description: 安全文件读写/列表/删除，限定 data/files/ 目录

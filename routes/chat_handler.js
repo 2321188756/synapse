@@ -131,7 +131,7 @@ function createChatRouter(modelConfig, systemPrompt, log) {
 
                 // daily_note 结果通过 memory_engine 统一写入（不再直写 SQLite）
                 for (let i = 0; i < toolCalls.length; i++) {
-                    if (toolCalls[i].name !== 'daily_note' || results[i]?.status !== 'success') continue;
+                    if (toolCalls[i].name !== 'DailyNote' || results[i]?.status !== 'success') continue;
                     const d = results[i]?.data || {};
                     try {
                         if (d.action === 'create') {
