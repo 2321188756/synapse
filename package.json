@@ -8,9 +8,27 @@
     "dev": "node --watch server.js",
     "build:rust": "cd rust-vector && npm run build",
     "lint": "eslint .",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
     "pm2:start": "pm2 start server.js --name synapse",
     "pm2:logs": "pm2 logs synapse",
     "pm2:stop": "pm2 stop synapse"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "core/**/*.js",
+      "routes/**/*.js",
+      "modules/**/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 10,
+        "functions": 10,
+        "lines": 10,
+        "statements": 10
+      }
+    }
   },
   "dependencies": {
     "axios": "^1.7.0",
