@@ -1,4 +1,5 @@
 name: WebSearch
+category: Search
 display_name: 联网搜索
 version: 1.0.0
 description: 使用 Tavily API 搜索互联网信息

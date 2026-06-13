@@ -122,6 +122,17 @@ class PluginLoader {
             .filter(p => p.manifest.type === 'internal' && p.manifest.enabled !== false);
     }
 
+    /** 工具箱分组 */
+    getToolboxes() {
+        const boxes = new Map();
+        for (const p of this.plugins.values()) {
+            const cat = p.manifest.category || 'General';
+            if (!boxes.has(cat)) boxes.set(cat, []);
+            boxes.get(cat).push({ name: p.manifest.name, type: p.manifest.type, enabled: p.manifest.enabled !== false });
+        }
+        return boxes;
+    }
+
     /** 根据名称获取插件 */
     get(name) {
         return this.plugins.get(name) || null;
