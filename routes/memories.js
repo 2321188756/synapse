@@ -16,9 +16,9 @@ const db = () => database.get();
 
 router.get('/memories', (req, res) => {
     try {
-        const { layer, tags, q, limit, offset } = req.query;
+        const { layer, tags, q, owner, limit, offset } = req.query;
         const result = memoryEngine.list({
-            layer, tags, q,
+            layer, tags, q, owner,
             limit: parseInt(limit, 10) || 50,
             offset: parseInt(offset, 10) || 0,
         });

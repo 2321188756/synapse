@@ -84,14 +84,15 @@ class MemoryEngine {
         const id = 'mem_' + uuid().slice(0, 8);
         const now = new Date().toISOString();
         const tags = entry.tags || this._extractKeywords(entry.content);
+        const owner = entry.owner || 'Nova';
 
         const stmt = this.db.prepare(`
-            INSERT INTO memories (id, content, summary, source, tags, importance, layer, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO memories (id, content, summary, source, tags, importance, layer, created_at, owner)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
         stmt.run(id, entry.content, entry.summary || entry.content.slice(0, 100),
             entry.source || 'conversation', JSON.stringify(tags),
-            entry.importance ?? 0.5, 'l3', now);
+            entry.importance ?? 0.5, 'l3', now, owner);
 
         // 更新标签索引
         const tagStmt = this.db.prepare('INSERT OR IGNORE INTO memory_tags (tag, memory_id) VALUES (?, ?)');
@@ -159,7 +160,7 @@ class MemoryEngine {
      * @param {string} query - 用户当前消息
      * @param {number} topK - 返回条数
      */
-    async recall(query, topK = 8, requestId) {
+    async recall(query, topK = 8, requestId, owner) {
         // ---- 第一层：向量语义检索 ----
         if (this._vectorReady && this.embedder) {
             try {
@@ -214,7 +215,7 @@ class MemoryEngine {
     }
 
     /** Phase 3 关键词检索（保留完整逻辑作为降级层）*/
-    _keywordRecall(query, topK = 5) {
+    _keywordRecall(query, topK = 5, owner) {
         const kwSet = new Set(this._extractKeywords(query));
         const cjk = query.match(/[一-鿿]/g) || [];
         for (const ch of cjk) kwSet.add(ch);
@@ -222,11 +223,11 @@ class MemoryEngine {
         this._expandKeywords(kwSet);
 
         const seen = new Set();
-        let rows = this._searchByKeywords([...kwSet], topK * 2);
+        let rows = this._searchByKeywords([...kwSet], topK * 2, owner);
         for (const r of rows) seen.add(r.id);
 
         if (rows.length < topK) {
-            const recent = this._getRecentMemories(topK * 2);
+            const recent = this._getRecentMemories(topK * 2, owner);
             for (const r of recent) {
                 if (!seen.has(r.id)) { rows.push(r); seen.add(r.id); }
                 if (rows.length >= topK * 2) break;
@@ -285,25 +286,28 @@ class MemoryEngine {
     }
 
     /** 关键词 LIKE 搜索 */
-    _searchByKeywords(keywords, limit) {
+    _searchByKeywords(keywords, limit, owner) {
         if (keywords.length === 0) return [];
         const likeClauses = keywords.map(() => '(tags LIKE ? OR content LIKE ?)').join(' OR ');
         const params = keywords.flatMap(k => ['%' + k + '%', '%' + k + '%']);
+        const ownerClause = owner ? 'AND owner = ?' : '';
+        if (owner) params.push(owner);
         return this.db.prepare(`
             SELECT * FROM memories
-            WHERE ${likeClauses}
+            WHERE ${likeClauses} ${ownerClause}
             ORDER BY importance DESC, recall_count DESC, created_at DESC
             LIMIT ?
         `).all(...params, limit);
     }
 
     /** 最近/重要记忆兜底 */
-    _getRecentMemories(limit) {
-        return this.db.prepare(`
-            SELECT * FROM memories
-            ORDER BY importance DESC, created_at DESC
-            LIMIT ?
-        `).all(limit);
+    _getRecentMemories(limit, owner) {
+        const ownerClause = owner ? 'WHERE owner = ?' : '';
+        const params = owner ? [limit] : [limit]; // need proper param ordering
+        const sql = `SELECT * FROM memories ${ownerClause} ORDER BY importance DESC, created_at DESC LIMIT ?`;
+        return owner
+            ? this.db.prepare(sql).all(owner, limit)
+            : this.db.prepare(sql).all(limit);
     }
 
     /** 关键词扩展：第一人称 ↔ 第三人称 */
@@ -347,10 +351,11 @@ class MemoryEngine {
 
     // ========== 查询 ==========
 
-    list({ layer, tags, q, limit = 50, offset = 0 } = {}) {
+    list({ layer, tags, q, owner, limit = 50, offset = 0 } = {}) {
         const conditions = [];
         const params = [];
         if (layer) { conditions.push('layer = ?'); params.push(layer); }
+        if (owner) { conditions.push('owner = ?'); params.push(owner); }
         if (tags) {
             const tagList = tags.split(',');
             conditions.push('(' + tagList.map(() => 'tags LIKE ?').join(' OR ') + ')');
