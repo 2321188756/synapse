@@ -1,0 +1,13 @@
+name: AgentBus
+display_name: Agent 通讯总线
+version: 1.0.0
+description: Agent 间消息传递 (pub/sub)，A2A 通讯基础设施
+type: internal
+runtime: inline
+entry: main.js
+enabled: true
+category: System
+
+internal:
+  consumes: [agent_message]
+  produces: [agent_message]

@@ -59,10 +59,15 @@ class AgentManager {
         return agent ? agent.tools : [];
     }
 
-    /** 切换 Agent */
+    /** 切换 Agent（通过 AgentBus 广播切换事件） */
     switchTo(name) {
         if (this.registry.has(name)) {
+            const prev = this.active;
             this.active = name;
+            try {
+                const bus = require('../plugins/AgentBus/main');
+                bus.send(prev || 'system', name, { type: 'agent_switch', from: prev, to: name });
+            } catch (_) { /* AgentBus not loaded */ }
             return true;
         }
         return false;
