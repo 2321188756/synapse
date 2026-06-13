@@ -92,8 +92,12 @@ function createChatRouter(modelConfig, systemPrompt, log) {
             const toolPrompt = generateToolPrompt(pluginLoader.getTools());
             chatLog.info('  tools injected: ' + (toolPrompt ? toolPrompt.length + ' chars' : 'none'), { requestId });
 
+            // 展开 {AgentName} 引用
+            const rawPrompt = systemMsg || systemPrompt || '你是一个有用的 AI 助手。';
+            const expandedPrompt = require('../core/agent_manager').expand(rawPrompt);
+
             let messages = buildMessages({
-                systemPrompt: systemMsg || systemPrompt || '你是一个有用的 AI 助手。',
+                systemPrompt: expandedPrompt,
                 history,
                 userMessage,
                 variables: {

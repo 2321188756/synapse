@@ -186,8 +186,8 @@ Python  →  AI 插件 (生图、搜索、数据分析)
 - [x] Phase 6: 管理 API — 插件热重载 + 记忆管理
 - [x] Phase 7: Docker 一键部署
 - [x] Phase 8: 稳定性加固 — 测试体系 + 错误处理 + 日志强化
-- [ ] Phase 9: 插件生态补全 ← 🔄
-- [ ] Phase 10: 记忆系统完善 ← 🔄
+- [x] Phase 9: 插件生态补全 — file_manager + static 插件落地
+- [x] Phase 10: 记忆系统完善 — 自动巩固 + 对话持久化 + 标签共现
 
 ---
 
@@ -198,17 +198,18 @@ Python  →  AI 插件 (生图、搜索、数据分析)
 | 🔴 P0 | 测试体系 | 49 tests, 5 suites ✅ |
 | 🔴 P0 | 错误处理加固 | config schema / health 增强 / 插件 5 次失败自禁 ✅ |
 | 🔴 P0 | 日志强化 | requestId 贯穿 chat→llm→memory 全链路 ✅ |
-| 🟡 P1 | file_manager 插件 | 文件读写/列表，限定安全目录 ← 🔄 |
-| 🟡 P1 | static 插件落地 | weather / time / system_info 注入 ← 🔄 |
-| 🟡 P1 | 记忆自动巩固 | node-schedule 定时 L2→L3 提升 ← 🔄 |
-| 🟡 P1 | 对话持久化 | 会话历史保存 + 恢复 ← 🔄 |
+| 🟡 P1 | file_manager 插件 | 文件读写/列表/mkdir/删除，路径穿越防护 ✅ |
+| 🟡 P1 | static 插件落地 | Weather / SystemInfo 占位符注入 ✅ |
+| 🟡 P1 | 记忆自动巩固 | 每小时 recallCount≥5 → L3 提升 ✅ |
+| 🟡 P1 | 对话持久化 | 自动保存 + conversations CRUD ✅ |
+| 🟡 P1 | 标签共现分析 | GET /api/memories/related ✅ |
 | 🟢 P2 | Agent 模式 | AI 自主多步任务执行 |
 | 🟢 P2 | image_gen 插件 | DALL-E / Stable Diffusion |
 | 🟢 P2 | CLI 工具 | 插件脚手架、记忆查询、配置管理 |
 | 🟢 P2 | 多模态支持 | 图片理解 + 文件上传 |
 | 🟢 P2 | OpenAPI 文档 | Swagger 自动生成 |
 
-**V0.2-beta 里程碑**：✅ 已达标。P0 三项全部完成（Phase 8），可发布。
+**V0.2 里程碑**：✅ 已达标。P0+P1 全部完成（Phase 8-10），可发布。
 
 ---
 

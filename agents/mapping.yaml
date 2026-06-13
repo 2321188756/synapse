@@ -1,0 +1,7 @@
+# Agent 名 → .txt 文件映射
+# 使用方式: system prompt 中写 {AgentName}，自动展开为 .txt 内容
+
+Nova: Nova.txt
+Coder: Coder.txt
+FileManager: FileManager.txt
+Watcher: Watcher.txt

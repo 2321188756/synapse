@@ -59,6 +59,9 @@ function init() {
 
     // 迁移：添加 updated_at 列（Phase 3.1 记忆更新功能）
     try { db.exec(`ALTER TABLE memories ADD COLUMN updated_at TEXT`); } catch (_) { /* 列已存在 */ }
+    // Phase 11: Agent 记忆隔离
+    try { db.exec(`ALTER TABLE memories ADD COLUMN owner TEXT DEFAULT 'Nova'`); } catch (_) { /* 列已存在 */ }
+    try { db.exec(`ALTER TABLE conversations ADD COLUMN owner TEXT DEFAULT 'Nova'`); } catch (_) { /* 列已存在 */ }
 
     // 向量索引表（Phase 4: 关联 USearch 索引 key 与记忆 ID）
     db.exec(`

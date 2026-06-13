@@ -52,6 +52,10 @@ database.init();
 const memoryEngine = require('./core/memory_engine');
 memoryEngine.init();
 
+// Agent 系统
+const agentManager = require('./core/agent_manager');
+agentManager.init();
+
 // ========== Express 初始化 ==========
 const app = express();
 const httpServer = http.createServer(app);

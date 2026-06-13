@@ -106,7 +106,9 @@ synapse/
 │   ├── 006-phase5-WebSocket推送.md
 │   ├── 007-phase6-管理API.md
 │   ├── 008-phase7-Docker部署.md
-│   └── 009-phase8-稳定性加固.md
+│   ├── 009-phase8-稳定性加固.md
+│   ├── 010-phase9-插件补全.md
+│   └── 011-phase10-记忆完善.md
 │
 ├── docs/                      ← 设计文档（代码的"说明书"）
 │   ├── 架构设计.md             ← 最核心：全景图 + 模块职责 + 数据流
@@ -132,6 +134,9 @@ synapse/
 ├── plugins/                   ← 插件目录
 │   ├── WebSearch/            ← 联网搜索 (Tavily)
 │   ├── DailyNote/            ← 日记插件 (记忆写入/更新)
+│   ├── FileManager/          ← 文件管理 (读写/列表/mkdir/删除)
+│   ├── Weather/              ← 天气占位符 (type: static)
+│   ├── SystemInfo/           ← 系统状态占位符 (type: static)
 │   └── RAGNova/              ← RAG 向量化 (type: internal)
 ├── rust-vector/               ← Rust 向量引擎（N-API）
 │   ├── Cargo.toml
@@ -143,6 +148,7 @@ synapse/
 │   ├── models.js              ← GET /v1/models (从上游拉取)
 │   ├── memories.js            ← 记忆管理 CRUD + consolidate
 │   ├── plugins.js             ← 插件管理 (列表/重载/启禁)
+│   ├── conversations.js       ← 对话历史 CRUD
 │   └── config.js              ← 系统配置 (脱敏查询/更新)
 ├── scripts/                   ← 运维脚本
 │   └── migrate-embeddings.js  ← 批量向量化迁移
