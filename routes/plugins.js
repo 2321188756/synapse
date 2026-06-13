@@ -17,6 +17,7 @@ router.get('/plugins', (_req, res) => {
         name: p.manifest.name,
         display_name: p.manifest.display_name || p.manifest.name,
         type: p.manifest.type || 'unknown',
+        category: p.manifest.category || 'General',
         version: p.manifest.version || '0.0.0',
         enabled: p.manifest.enabled !== false,
         runtime: p.manifest.runtime || 'subprocess',
